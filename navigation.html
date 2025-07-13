@@ -6,14 +6,50 @@
   <title>NeoCart AR Navigation</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
+    body {
+      background-color: #f3f4f6; /* A more subtle background */
+      font-family: 'Inter', sans-serif; /* Using Inter font */
+    }
+
+    .store-map-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 600px; /* Fixed height for the container */
+      width: 100%; /* Ensure container takes full width */
+      max-width: 100%; /* Ensure container takes full width */
+    }
+
     .store-map {
-      background: url('https://cdn.pixabay.com/photo/2020/12/11/13/27/store-5822969_1280.jpg') no-repeat center center;
+      /* Updated background image for a more realistic store vibe */
+      background: url('https://cdn.pixabay.com/photo/2017/08/02/09/02/supermarket-2570077_1280.jpg') no-repeat center center;
       background-size: cover;
       position: relative;
-      height: 600px;
+      width: 95%; /* Increased width to fill more of the container */
+      height: 95%; /* Increased height to fill more of the container */
       border-radius: 20px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
       overflow: hidden;
+      transition: box-shadow 0.3s ease-in-out; /* Keep transition for shadow */
+    }
+
+    /* Overlay for the background theme */
+    .store-map::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      /* Slightly reduced opacity to let more of the new background image show */
+      background: rgba(0, 0, 0, 0.15);
+      z-index: 1; /* Ensure it's above the background image but below elements */
+      border-radius: 20px; /* Match parent border-radius */
+    }
+
+    /* Hover effect to make it more interactive */
+    .store-map:hover {
+      box-shadow: 0 15px 45px rgba(0,0,0,0.3); /* Keep hover shadow effect */
     }
 
     .dot, .destination {
@@ -21,18 +57,35 @@
       height: 20px;
       border-radius: 50%;
       position: absolute;
-      z-index: 10;
+      z-index: 10; /* Ensure dots are above the overlay */
     }
 
     .dot {
-      background-color: #3B82F6;
+      background-color: #3B82F6; /* Blue dot */
       box-shadow: 0 0 12px #3B82F6;
       transition: all 0.8s ease-in-out;
     }
 
     .destination {
-      background-color: #10B981;
+      background-color: #10B981; /* Green destination */
       box-shadow: 0 0 10px #10B981aa;
+      animation: pulse 1.5s infinite ease-in-out; /* Add pulsing animation */
+    }
+
+    /* Keyframes for pulsing animation */
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 10px #10B981aa;
+      }
+      50% {
+        transform: scale(1.2);
+        box-shadow: 0 0 20px #10B981;
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 10px #10B981aa;
+      }
     }
 
     .aisle-label {
@@ -42,8 +95,56 @@
       border: 1px solid #ccc;
       border-radius: 6px;
       padding: 2px 6px;
-      z-index: 5;
+      z-index: 5; /* Ensure labels are above the overlay */
       font-weight: bold;
+      color: #333; /* Darker text for readability */
+    }
+
+    /* Styles for the breadcrumb path dots */
+    .path-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: rgba(59, 130, 246, 0.5); /* Semi-transparent blue */
+      position: absolute;
+      z-index: 8; /* Below main dot, above overlay */
+      opacity: 0; /* Start hidden */
+      animation: fadeOut 1s forwards; /* Fade out animation */
+    }
+
+    /* Keyframes for fading out path dots */
+    @keyframes fadeOut {
+      0% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(0.5); }
+    }
+
+    /* Custom message box styles */
+    .message-box {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: center;
+      font-weight: 500;
+      color: #333;
+      min-height: 50px; /* Ensure it has some height even when empty */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .message-box.error {
+      background-color: #fee2e2;
+      border-color: #ef4444;
+      color: #ef4444;
+    }
+
+    .message-box.success {
+      background-color: #d1fae5;
+      border-color: #10b981;
+      color: #10b981;
     }
   </style>
 </head>
@@ -53,24 +154,29 @@
     <h1 class="text-4xl font-bold text-gray-800 mb-4">🛒 NeoCart: In-Store Navigation with Smart Routing</h1>
     <p class="text-gray-600 mb-6">Simulate a smart path to your desired product through interactive aisles using AR navigation.</p>
 
-    <!-- Input field -->
-    <div class="mb-6 flex gap-4">
-      <input id="productInput" type="text" placeholder="Enter a product (e.g. baby food, eggs, makeup)" class="border border-gray-300 rounded-md px-4 py-2 w-full md:w-1/2" />
-      <button onclick="startNavigation()" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700">Start Navigation</button>
-      <button onclick="resetNavigation()" class="bg-gray-300 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-400">Reset</button>
+    <!-- Input field and buttons -->
+    <div class="mb-6 flex flex-col md:flex-row gap-4">
+      <input id="productInput" type="text" placeholder="Enter a product (e.g. baby food, eggs, makeup)" class="border border-gray-300 rounded-md px-4 py-2 w-full md:w-1/2 focus:ring-blue-500 focus:border-blue-500" />
+      <button id="startButton" onclick="startNavigation()" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Start Navigation</button>
+      <button id="resetButton" onclick="resetNavigation()" class="bg-gray-300 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-400 transition-colors">Reset</button>
     </div>
 
-    <!-- Store map layout -->
-    <div class="store-map" id="storeMap">
-      <!-- Dot & destination marker -->
-      <div class="dot" id="dot" style="top: 85%; left: 10%;"></div>
-      <div class="destination" id="destDot" style="top: 20%; left: 75%; display: none;"></div>
+    <!-- Custom Message Box -->
+    <div id="messageBox" class="message-box mb-6 hidden"></div>
 
-      <!-- Aisle Labels -->
-      <div class="aisle-label" style="top: 88%; left: 12%;">Entrance</div>
-      <div class="aisle-label" style="top: 60%; left: 28%;">Aisle 2</div>
-      <div class="aisle-label" style="top: 45%; left: 50%;">Aisle 4</div>
-      <div class="aisle-label" style="top: 25%; left: 72%;">Destination</div>
+    <!-- Store map container -->
+    <div class="store-map-container">
+      <div class="store-map" id="storeMap">
+        <!-- Dot & destination marker -->
+        <div class="dot" id="dot" style="top: 85%; left: 10%;"></div>
+        <div class="destination" id="destDot" style="top: 20%; left: 75%; display: none;"></div>
+
+        <!-- Aisle Labels -->
+        <div class="aisle-label" style="top: 88%; left: 12%;">Entrance</div>
+        <div class="aisle-label" style="top: 60%; left: 28%;">Aisle 2</div>
+        <div class="aisle-label" style="top: 45%; left: 50%;">Aisle 4</div>
+        <div class="aisle-label" style="top: 25%; left: 72%;">Destination</div>
+      </div>
     </div>
   </div>
 
@@ -78,13 +184,19 @@
   <script>
     const dot = document.getElementById("dot");
     const destDot = document.getElementById("destDot");
+    const productInput = document.getElementById("productInput");
+    const startButton = document.getElementById("startButton");
+    const resetButton = document.getElementById("resetButton");
+    const messageBox = document.getElementById("messageBox");
+    const storeMap = document.getElementById("storeMap"); // Get the store map element
+    let navigationInterval; // To store the interval ID for clearing
 
     const aisleMap = {
       "baby food": [
         { top: "85%", left: "10%" },  // Entrance
         { top: "60%", left: "28%" },  // Aisle 2
         { top: "45%", left: "50%" },  // Aisle 4
-        { top: "20%", left: "75%" }   // Final
+        { top: "20%", left: "75%" }  // Final
       ],
       "makeup": [
         { top: "85%", left: "10%" },
@@ -100,39 +212,112 @@
       ]
     };
 
+    /**
+     * Displays a message in the message box.
+     * @param {string} message - The message to display.
+     * @param {string} type - The type of message ('success', 'error', or '').
+     */
+    function showMessage(message, type = '') {
+      messageBox.textContent = message;
+      messageBox.className = `message-box mb-6 ${type}`; // Reset classes and apply new type
+      messageBox.classList.remove('hidden'); // Make sure it's visible
+    }
+
+    /**
+     * Clears the message box.
+     */
+    function clearMessage() {
+      messageBox.classList.add('hidden');
+      messageBox.textContent = '';
+      messageBox.className = 'message-box mb-6'; // Reset classes
+    }
+
+    /**
+     * Clears all path dots from the store map.
+     */
+    function clearPathDots() {
+      const pathDots = storeMap.querySelectorAll('.path-dot');
+      pathDots.forEach(dot => dot.remove());
+    }
+
+    /**
+     * Creates and adds a path dot at a given position.
+     * @param {string} top - The top CSS property (e.g., "50%").
+     * @param {string} left - The left CSS property (e.g., "50%").
+     */
+    function createPathDot(top, left) {
+      const pathDot = document.createElement('div');
+      pathDot.classList.add('path-dot');
+      pathDot.style.top = top;
+      pathDot.style.left = left;
+      storeMap.appendChild(pathDot);
+    }
+
+    /**
+     * Starts the navigation process.
+     */
     function startNavigation() {
-      const input = document.getElementById("productInput").value.toLowerCase().trim();
+      clearMessage(); // Clear any previous messages
+      clearPathDots(); // Clear any existing path dots
+      const input = productInput.value.toLowerCase().trim();
       const route = aisleMap[input];
 
-      if (!route) {
-        alert("We couldn't find that product. Try: baby food, makeup, eggs");
+      if (!input) {
+        showMessage("Please enter a product to navigate.", "error");
         return;
       }
 
+      if (!route) {
+        showMessage("We couldn't find that product. Try: baby food, makeup, eggs", "error");
+        return;
+      }
+
+      // Disable start button and input during navigation
+      startButton.disabled = true;
+      productInput.disabled = true;
+      showMessage(`Navigating to ${input}...`, "success");
+
+      // Set initial dot position
       dot.style.top = route[0].top;
       dot.style.left = route[0].left;
 
+      // Set destination dot position and display it
       destDot.style.display = "block";
       destDot.style.top = route[route.length - 1].top;
       destDot.style.left = route[route.length - 1].left;
 
       let step = 1;
-      const interval = setInterval(() => {
+      navigationInterval = setInterval(() => {
         if (step >= route.length) {
-          clearInterval(interval);
+          clearInterval(navigationInterval);
+          startButton.disabled = false; // Re-enable button
+          productInput.disabled = false; // Re-enable input
+          showMessage(`Arrived at ${input}!`, "success");
         } else {
+          // Create a path dot at the current position before moving
+          createPathDot(dot.style.top, dot.style.left);
+
+          // Move the main dot to the next position
           dot.style.top = route[step].top;
           dot.style.left = route[step].left;
           step++;
         }
-      }, 1000);
+      }, 1000); // Move every 1 second
     }
 
+    /**
+     * Resets the navigation to its initial state.
+     */
     function resetNavigation() {
+      clearInterval(navigationInterval); // Stop any ongoing navigation
       dot.style.top = "85%";
       dot.style.left = "10%";
       destDot.style.display = "none";
-      document.getElementById("productInput").value = "";
+      productInput.value = "";
+      startButton.disabled = false; // Re-enable start button
+      productInput.disabled = false; // Re-enable input
+      clearMessage(); // Clear message box
+      clearPathDots(); // Clear all path dots
     }
   </script>
 

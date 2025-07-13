@@ -1,0 +1,559 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Virtual Product Configurator</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <style>
+        :where([class^="ri-"])::before { content: "\f3c2"; }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #f3e8ff 0%, #fce7f3 35%, #dbeafe 100%);
+            animation: gradientShift 8s ease-in-out infinite;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background: linear-gradient(135deg, #f3e8ff 0%, #fce7f3 35%, #dbeafe 100%); }
+            50% { background: linear-gradient(135deg, #dbeafe 0%, #f3e8ff 35%, #fce7f3 100%); }
+        }
+        
+        .floating-element {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(2deg); }
+            66% { transform: translateY(-10px) rotate(-1deg); }
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .glow-border {
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+            animation: glowPulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes glowPulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(139, 92, 246, 0.5); }
+        }
+        
+        .drag-zone {
+            border: 2px dashed #cbd5e1;
+            transition: all 0.3s ease;
+        }
+        
+        .drag-zone.drag-over {
+            border-color: #8b5cf6;
+            background: rgba(139, 92, 246, 0.1);
+        }
+        
+        .chat-bubble {
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+        
+        .scroll-container {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .scroll-container::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .product-card {
+            transition: all 0.3s ease;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .config-panel {
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .config-panel.active {
+            transform: translateX(0);
+        }
+        
+        .chat-interface {
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .chat-interface.active {
+            transform: translateY(0);
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#8b5cf6',
+                        secondary: '#ec4899'
+                    },
+                    borderRadius: {
+                        'none': '0px',
+                        'sm': '4px',
+                        DEFAULT: '8px',
+                        'md': '12px',
+                        'lg': '16px',
+                        'xl': '20px',
+                        '2xl': '24px',
+                        '3xl': '32px',
+                        'full': '9999px',
+                        'button': '8px'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="gradient-bg min-h-screen">
+    <div class="floating-element fixed top-20 left-10 w-16 h-16 opacity-20">
+        <div class="w-full h-full flex items-center justify-center text-4xl">
+            <i class="ri-sofa-line"></i>
+        </div>
+    </div>
+    
+    <div class="floating-element fixed top-32 right-20 w-12 h-12 opacity-20" style="animation-delay: -2s;">
+        <div class="w-full h-full flex items-center justify-center text-3xl">
+            <i class="ri-lightbulb-line"></i>
+        </div>
+    </div>
+    
+    <div class="floating-element fixed bottom-40 left-20 w-14 h-14 opacity-20" style="animation-delay: -4s;">
+        <div class="w-full h-full flex items-center justify-center text-3xl">
+            <i class="ri-armchair-line"></i>
+        </div>
+    </div>
+    
+    <div class="floating-element fixed bottom-60 right-10 w-10 h-10 opacity-20" style="animation-delay: -1s;">
+        <div class="w-full h-full flex items-center justify-center text-2xl">
+            <i class="ri-plant-line"></i>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-6 py-12">
+        <div id="welcome-section" class="max-w-4xl mx-auto text-center mb-16">
+            <h1 class="text-5xl font-bold text-gray-800 mb-8">Interactive Virtual Product Configurator</h1>
+            
+            <div class="glass-card rounded-3xl p-12 glow-border mb-8">
+                <div class="w-8 h-8 flex items-center justify-center text-2xl text-primary mb-6 mx-auto">
+                    <i class="ri-edit-line"></i>
+                </div>
+                <h2 class="text-2xl font-semibold text-gray-700 mb-6">What would you like to do today?</h2>
+                
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="task-input"
+                        placeholder="Customize my living room"
+                        class="w-full px-6 py-4 text-lg rounded-2xl border-none outline-none bg-white/50 backdrop-blur-sm text-gray-800 placeholder-gray-500"
+                    >
+                </div>
+                
+                <button id="next-btn" class="mt-8 px-8 py-4 bg-gradient-to-r from-primary to-secondary text-white font-semibold rounded-button whitespace-nowrap !rounded-button hover:shadow-lg transition-all duration-300">
+                    Next
+                    <div class="w-4 h-4 inline-flex items-center justify-center ml-2">
+                        <i class="ri-arrow-right-line"></i>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <div id="upload-section" class="max-w-4xl mx-auto mb-16 hidden">
+            <div class="glass-card rounded-3xl p-8">
+                <div class="w-8 h-8 flex items-center justify-center text-2xl text-primary mb-6 mx-auto">
+                    <i class="ri-camera-line"></i>
+                </div>
+                <h2 class="text-2xl font-semibold text-gray-700 text-center mb-8">Upload a photo of your room</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <button id="upload-btn" class="glass-card rounded-2xl p-6 hover:bg-white/40 transition-all duration-300 whitespace-nowrap !rounded-button">
+                        <div class="w-12 h-12 flex items-center justify-center text-3xl text-primary mx-auto mb-4">
+                            <i class="ri-cloud-line"></i>
+                        </div>
+                        <span class="text-gray-700 font-medium">Upload from Device</span>
+                    </button>
+                    
+                    <button id="sample-btn" class="glass-card rounded-2xl p-6 hover:bg-white/40 transition-all duration-300 whitespace-nowrap !rounded-button">
+                        <div class="w-12 h-12 flex items-center justify-center text-3xl text-primary mx-auto mb-4">
+                            <i class="ri-gallery-line"></i>
+                        </div>
+                        <span class="text-gray-700 font-medium">Use Sample Room</span>
+                    </button>
+                </div>
+                
+                <div id="drop-zone" class="drag-zone rounded-2xl p-12 text-center">
+                    <div class="w-16 h-16 flex items-center justify-center text-4xl text-gray-400 mx-auto mb-4">
+                        <i class="ri-folder-cloud-line"></i>
+                    </div>
+                    <p class="text-gray-600 text-lg">Drag and drop your image here</p>
+                    <p class="text-gray-500 text-sm mt-2">or click to browse files</p>
+                </div>
+                
+                <input type="file" id="file-input" accept="image/*" class="hidden">
+                
+                <div id="image-preview" class="mt-8 hidden">
+                    <div class="relative inline-block">
+                        <img id="preview-img" class="rounded-2xl max-w-full h-64 object-cover object-top">
+                        <button id="remove-img" class="absolute -top-2 -right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors">
+                            <i class="ri-close-line text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="products-section" class="max-w-6xl mx-auto mb-16 hidden">
+            <h2 class="text-3xl font-semibold text-gray-800 text-center mb-8">Recommended Products</h2>
+            
+            <div class="flex gap-4 justify-center mb-8 flex-wrap">
+                <span class="px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-gray-700 font-medium">Sofa</span>
+                <span class="px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-gray-700 font-medium">Curtains</span>
+                <span class="px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-gray-700 font-medium">Chairs</span>
+                <span class="px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-gray-700 font-medium">Coffee Table</span>
+                <span class="px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-gray-700 font-medium">Wall Art</span>
+            </div>
+            
+            <div class="scroll-container overflow-x-auto pb-4">
+                <div class="flex gap-6 min-w-max px-4">
+                    <div class="product-card glass-card rounded-2xl p-6 w-80 flex-shrink-0">
+                        <img src="https://readdy.ai/api/search-image?query=Modern%20sectional%20sofa%20in%20neutral%20beige%20color%20with%20clean%20lines%20and%20soft%20cushions%2C%20minimalist%20living%20room%20setting%20with%20white%20walls%20and%20natural%20lighting%2C%20contemporary%20furniture%20design%2C%20high-quality%20fabric%20upholstery%2C%20comfortable%20seating%20arrangement&width=320&height=200&seq=sofa1&orientation=landscape" 
+                             alt="Modern Sectional Sofa" class="w-full h-48 object-cover object-top rounded-xl mb-4">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Modern Sectional Sofa</h3>
+                        <p class="text-gray-600 text-sm mb-4">Perfect for spacious living rooms with contemporary design</p>
+                        <div class="flex gap-3">
+                            <button class="add-to-room flex-1 px-4 py-2 bg-primary text-white rounded-button whitespace-nowrap !rounded-button hover:bg-primary/90 transition-colors">Add to Room</button>
+                            <button class="px-4 py-2 text-primary border border-primary rounded-button whitespace-nowrap !rounded-button hover:bg-primary/10 transition-colors">View Details</button>
+                        </div>
+                    </div>
+                    
+                    <div class="product-card glass-card rounded-2xl p-6 w-80 flex-shrink-0">
+                        <img src="https://readdy.ai/api/search-image?query=Elegant%20floor-to-ceiling%20curtains%20in%20soft%20cream%20color%20with%20flowing%20fabric%2C%20modern%20window%20treatment%20in%20bright%20living%20room%2C%20natural%20light%20filtering%20through%2C%20minimalist%20interior%20design%2C%20high-quality%20textile%20materials&width=320&height=200&seq=curtains1&orientation=landscape" 
+                             alt="Elegant Curtains" class="w-full h-48 object-cover object-top rounded-xl mb-4">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Elegant Curtains</h3>
+                        <p class="text-gray-600 text-sm mb-4">Floor-to-ceiling design for enhanced room ambiance</p>
+                        <div class="flex gap-3">
+                            <button class="add-to-room flex-1 px-4 py-2 bg-primary text-white rounded-button whitespace-nowrap !rounded-button hover:bg-primary/90 transition-colors">Add to Room</button>
+                            <button class="px-4 py-2 text-primary border border-primary rounded-button whitespace-nowrap !rounded-button hover:bg-primary/10 transition-colors">View Details</button>
+                        </div>
+                    </div>
+                    
+                    <div class="product-card glass-card rounded-2xl p-6 w-80 flex-shrink-0">
+                        <img src="https://readdy.ai/api/search-image?query=Stylish%20accent%20chair%20in%20warm%20terracotta%20color%20with%20curved%20backrest%2C%20modern%20upholstered%20armchair%20in%20contemporary%20living%20space%2C%20comfortable%20single%20seating%20furniture%2C%20premium%20fabric%20finish%2C%20elegant%20design%20details&width=320&height=200&seq=chair1&orientation=landscape" 
+                             alt="Accent Chair" class="w-full h-48 object-cover object-top rounded-xl mb-4">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Accent Chair</h3>
+                        <p class="text-gray-600 text-sm mb-4">Comfortable seating with stylish curved design</p>
+                        <div class="flex gap-3">
+                            <button class="add-to-room flex-1 px-4 py-2 bg-primary text-white rounded-button whitespace-nowrap !rounded-button hover:bg-primary/90 transition-colors">Add to Room</button>
+                            <button class="px-4 py-2 text-primary border border-primary rounded-button whitespace-nowrap !rounded-button hover:bg-primary/10 transition-colors">View Details</button>
+                        </div>
+                    </div>
+                    
+                    <div class="product-card glass-card rounded-2xl p-6 w-80 flex-shrink-0">
+                        <img src="https://readdy.ai/api/search-image?query=Modern%20glass%20coffee%20table%20with%20sleek%20metal%20legs%2C%20transparent%20rectangular%20table%20top%20in%20contemporary%20living%20room%2C%20minimalist%20furniture%20design%2C%20clean%20lines%20and%20geometric%20shape%2C%20sophisticated%20home%20decor%20piece&width=320&height=200&seq=table1&orientation=landscape" 
+                             alt="Glass Coffee Table" class="w-full h-48 object-cover object-top rounded-xl mb-4">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Glass Coffee Table</h3>
+                        <p class="text-gray-600 text-sm mb-4">Sleek transparent design to open up your space</p>
+                        <div class="flex gap-3">
+                            <button class="add-to-room flex-1 px-4 py-2 bg-primary text-white rounded-button whitespace-nowrap !rounded-button hover:bg-primary/90 transition-colors">Add to Room</button>
+                            <button class="px-4 py-2 text-primary border border-primary rounded-button whitespace-nowrap !rounded-button hover:bg-primary/10 transition-colors">View Details</button>
+                        </div>
+                    </div>
+                    
+                    <div class="product-card glass-card rounded-2xl p-6 w-80 flex-shrink-0">
+                        <img src="https://readdy.ai/api/search-image?query=Abstract%20modern%20wall%20art%20in%20soft%20neutral%20tones%2C%20contemporary%20framed%20artwork%20hanging%20on%20white%20wall%2C%20minimalist%20geometric%20design%2C%20elegant%20home%20decoration%2C%20sophisticated%20interior%20styling%2C%20artistic%20composition&width=320&height=200&seq=art1&orientation=landscape" 
+                             alt="Wall Art" class="w-full h-48 object-cover object-top rounded-xl mb-4">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Abstract Wall Art</h3>
+                        <p class="text-gray-600 text-sm mb-4">Contemporary artwork to enhance your wall decor</p>
+                        <div class="flex gap-3">
+                            <button class="add-to-room flex-1 px-4 py-2 bg-primary text-white rounded-button whitespace-nowrap !rounded-button hover:bg-primary/90 transition-colors">Add to Room</button>
+                            <button class="px-4 py-2 text-primary border border-primary rounded-button whitespace-nowrap !rounded-button hover:bg-primary/10 transition-colors">View Details</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="config-panel" class="config-panel fixed top-0 right-0 w-96 h-full bg-white shadow-2xl z-50">
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-semibold text-gray-800">Configure Product</h3>
+                <button id="close-config" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-700">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="p-6 overflow-y-auto h-full pb-32">
+            <div class="mb-8">
+                <h4 class="text-lg font-medium text-gray-800 mb-4">Colors & Materials</h4>
+                <div class="grid grid-cols-4 gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-gray-200 border-2 border-primary cursor-pointer"></div>
+                    <div class="w-12 h-12 rounded-xl bg-blue-200 border-2 border-transparent cursor-pointer hover:border-primary"></div>
+                    <div class="w-12 h-12 rounded-xl bg-green-200 border-2 border-transparent cursor-pointer hover:border-primary"></div>
+                    <div class="w-12 h-12 rounded-xl bg-pink-200 border-2 border-transparent cursor-pointer hover:border-primary"></div>
+                </div>
+            </div>
+            
+            <div class="mb-8">
+                <h4 class="text-lg font-medium text-gray-800 mb-4">Style Variants</h4>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="glass-card rounded-xl p-4 cursor-pointer border-2 border-primary">
+                        <img src="https://readdy.ai/api/search-image?query=Modern%20furniture%20style%20variant%20with%20clean%20lines%20and%20minimalist%20design%2C%20contemporary%20home%20decor%20piece%20in%20neutral%20colors%2C%20sleek%20and%20sophisticated%20appearance&width=120&height=80&seq=variant1&orientation=landscape" 
+                             alt="Modern Style" class="w-full h-16 object-cover object-top rounded-lg mb-2">
+                        <p class="text-sm text-gray-700 text-center">Modern</p>
+                    </div>
+                    <div class="glass-card rounded-xl p-4 cursor-pointer border-2 border-transparent hover:border-primary">
+                        <img src="https://readdy.ai/api/search-image?query=Classic%20furniture%20style%20variant%20with%20traditional%20design%20elements%2C%20elegant%20home%20decor%20piece%20with%20timeless%20appeal%2C%20sophisticated%20craftsmanship%20and%20refined%20details&width=120&height=80&seq=variant2&orientation=landscape" 
+                             alt="Classic Style" class="w-full h-16 object-cover object-top rounded-lg mb-2">
+                        <p class="text-sm text-gray-700 text-center">Classic</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-8">
+                <h4 class="text-lg font-medium text-gray-800 mb-4">Size & Position</h4>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-2">Size</label>
+                        <input type="range" min="50" max="150" value="100" class="w-full">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-2">Position X</label>
+                        <input type="range" min="0" max="100" value="50" class="w-full">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-2">Position Y</label>
+                        <input type="range" min="0" max="100" value="50" class="w-full">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-8">
+                <h4 class="text-lg font-medium text-gray-800 mb-4">Live Preview</h4>
+                <div class="glass-card rounded-xl p-4">
+                    <div class="w-full h-32 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <span class="text-gray-500">Preview will appear here</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="absolute bottom-0 left-0 right-0 p-6 bg-white border-t border-gray-200">
+            <div class="flex gap-3">
+                <button id="apply-config" class="flex-1 px-4 py-3 bg-primary text-white rounded-button whitespace-nowrap !rounded-button hover:bg-primary/90 transition-colors">Apply Changes</button>
+                <button id="cancel-config" class="px-4 py-3 text-gray-600 border border-gray-300 rounded-button whitespace-nowrap !rounded-button hover:bg-gray-50 transition-colors">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="chat-bubble" class="chat-bubble fixed bottom-8 right-8 w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 z-40">
+        <div class="w-6 h-6 flex items-center justify-center">
+            <i class="ri-chat-3-line"></i>
+        </div>
+    </div>
+    <div id="chat-interface" class="chat-interface fixed bottom-8 right-8 w-80 h-96 bg-white rounded-2xl shadow-2xl z-50">
+        <div class="p-4 border-b border-gray-200 rounded-t-2xl bg-gradient-to-r from-primary to-secondary text-white">
+            <div class="flex items-center justify-between">
+                <h3 class="font-semibold">AI Assistant</h3>
+                <button id="close-chat" class="w-6 h-6 flex items-center justify-center text-white/80 hover:text-white">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="p-4 h-64 overflow-y-auto">
+            <div class="glass-card rounded-xl p-3 mb-4">
+                <p class="text-sm text-gray-700">Want help choosing the right sofa for your wall color?</p>
+            </div>
+            
+            <div class="flex flex-wrap gap-2 mb-4">
+                <button class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm hover:bg-primary/20 transition-colors whitespace-nowrap !rounded-button">Color matching</button>
+                <button class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm hover:bg-primary/20 transition-colors whitespace-nowrap !rounded-button">Size guide</button>
+                <button class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm hover:bg-primary/20 transition-colors whitespace-nowrap !rounded-button">Style tips</button>
+            </div>
+        </div>
+        
+        <div class="p-4 border-t border-gray-200">
+            <div class="flex gap-2">
+                <input type="text" placeholder="Ask me anything..." class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-primary">
+                <button class="w-10 h-10 bg-primary text-white rounded-lg flex items-center justify-center hover:bg-primary/90 transition-colors">
+                    <div class="w-4 h-4 flex items-center justify-center">
+                        <i class="ri-send-plane-line"></i>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script id="welcome-interaction">
+        document.addEventListener('DOMContentLoaded', function() {
+            const nextBtn = document.getElementById('next-btn');
+            const taskInput = document.getElementById('task-input');
+            const welcomeSection = document.getElementById('welcome-section');
+            const uploadSection = document.getElementById('upload-section');
+            
+            nextBtn.addEventListener('click', function() {
+                if (taskInput.value.trim()) {
+                    welcomeSection.classList.add('hidden');
+                    uploadSection.classList.remove('hidden');
+                }
+            });
+            
+            taskInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && taskInput.value.trim()) {
+                    welcomeSection.classList.add('hidden');
+                    uploadSection.classList.remove('hidden');
+                }
+            });
+        });
+    </script>
+
+    <script id="upload-interaction">
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadBtn = document.getElementById('upload-btn');
+            const sampleBtn = document.getElementById('sample-btn');
+            const dropZone = document.getElementById('drop-zone');
+            const fileInput = document.getElementById('file-input');
+            const imagePreview = document.getElementById('image-preview');
+            const previewImg = document.getElementById('preview-img');
+            const removeImg = document.getElementById('remove-img');
+            const uploadSection = document.getElementById('upload-section');
+            const productsSection = document.getElementById('products-section');
+            
+            uploadBtn.addEventListener('click', () => fileInput.click());
+            dropZone.addEventListener('click', () => fileInput.click());
+            
+            sampleBtn.addEventListener('click', function() {
+                previewImg.src = 'https://readdy.ai/api/search-image?query=Modern%20living%20room%20interior%20with%20neutral%20colors%2C%20comfortable%20seating%20area%2C%20natural%20lighting%20from%20large%20windows%2C%20contemporary%20furniture%20arrangement%2C%20clean%20and%20spacious%20design%2C%20home%20decor%20inspiration&width=400&height=300&seq=sample1&orientation=landscape';
+                imagePreview.classList.remove('hidden');
+                setTimeout(() => {
+                    uploadSection.classList.add('hidden');
+                    productsSection.classList.remove('hidden');
+                }, 1000);
+            });
+            
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImg.src = e.target.result;
+                        imagePreview.classList.remove('hidden');
+                        setTimeout(() => {
+                            uploadSection.classList.add('hidden');
+                            productsSection.classList.remove('hidden');
+                        }, 1000);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            removeImg.addEventListener('click', function() {
+                imagePreview.classList.add('hidden');
+                fileInput.value = '';
+            });
+            
+            dropZone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                dropZone.classList.add('drag-over');
+            });
+            
+            dropZone.addEventListener('dragleave', function() {
+                dropZone.classList.remove('drag-over');
+            });
+            
+            dropZone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                dropZone.classList.remove('drag-over');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const file = files[0];
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            previewImg.src = e.target.result;
+                            imagePreview.classList.remove('hidden');
+                            setTimeout(() => {
+                                uploadSection.classList.add('hidden');
+                                productsSection.classList.remove('hidden');
+                            }, 1000);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                }
+            });
+        });
+    </script>
+    <script id="product-interaction">
+        document.addEventListener('DOMContentLoaded', function() {
+            const addToRoomBtns = document.querySelectorAll('.add-to-room');
+            const configPanel = document.getElementById('config-panel');
+            const closeConfig = document.getElementById('close-config');
+            const applyConfig = document.getElementById('apply-config');
+            const cancelConfig = document.getElementById('cancel-config');
+            
+            addToRoomBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    configPanel.classList.add('active');
+                });
+            });
+            
+            closeConfig.addEventListener('click', function() {
+                configPanel.classList.remove('active');
+            });
+            
+            cancelConfig.addEventListener('click', function() {
+                configPanel.classList.remove('active');
+            });
+            
+            applyConfig.addEventListener('click', function() {
+                configPanel.classList.remove('active');
+            });
+        });
+    </script>
+
+    <script id="chat-interaction">
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatBubble = document.getElementById('chat-bubble');
+            const chatInterface = document.getElementById('chat-interface');
+            const closeChat = document.getElementById('close-chat');
+            
+            chatBubble.addEventListener('click', function() {
+                chatBubble.style.display = 'none';
+                chatInterface.classList.add('active');
+            });
+            
+            closeChat.addEventListener('click', function() {
+                chatInterface.classList.remove('active');
+                chatBubble.style.display = 'flex';
+            });
+        });
+    </script>
+</body>
+</html>

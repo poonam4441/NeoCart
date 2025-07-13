@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neocart - Proactive Post-Purchase Support</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <style>
+        :where([class^="ri-"])::before {
+            content: "\f3c2";
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1',
+                        secondary: '#8b5cf6'
+                    },
+                    borderRadius: {
+                        'none': '0px',
+                        'sm': '4px',
+                        DEFAULT: '8px',
+                        'md': '12px',
+                        'lg': '16px',
+                        'xl': '20px',
+                        '2xl': '24px',
+                        '3xl': '32px',
+                        'full': '9999px',
+                        'button': '8px'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 overflow-x-hidden">
+    <div class="animated-bg fixed inset-0 opacity-30 pointer-events-none">
+        <div class="floating-blob absolute top-20 left-10 w-32 h-32 bg-blue-200 rounded-full blur-xl animate-pulse"></div>
+        <div class="floating-blob absolute top-40 right-20 w-24 h-24 bg-purple-200 rounded-full blur-lg animate-bounce"></div>
+        <div class="floating-blob absolute bottom-40 left-1/3 w-28 h-28 bg-pink-200 rounded-full blur-xl animate-pulse"></div>
+    </div>
+
+    <header class="relative z-10 bg-white/80 backdrop-blur-lg border-b border-white/20 shadow-sm">
+        <div class="w-full px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-8">
+                    <div class="font-['Pacifico'] text-2xl text-primary">Neocart</div>
+                    <nav class="hidden md:flex space-x-6">
+                        <a href="#" class="text-gray-700 hover:text-primary transition-colors">Home</a>
+                        <a href="#" class="text-primary font-medium">My Purchases</a>
+                        <a href="#" class="text-gray-700 hover:text-primary transition-colors">Alerts</a>
+                        <a href="#" class="text-gray-700 hover:text-primary transition-colors">Virtual Assistant</a>
+                        <a href="#" class="text-gray-700 hover:text-primary transition-colors">Settings</a>
+                    </nav>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="w-8 h-8 flex items-center justify-center">
+                        <i class="ri-shopping-cart-line text-gray-600"></i>
+                    </div>
+                    <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                        <i class="ri-user-line text-white text-sm"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="relative z-10 px-6 py-8 max-w-7xl mx-auto">
+        <section class="mb-12">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">My Purchases Dashboard</h1>
+            <p class="text-gray-600">Smart monitoring for all your purchased items</p>
+        </section>
+
+        <section class="mb-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="purchase-card bg-white/70 backdrop-blur-lg rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/20">
+                    <div class="relative mb-4">
+                        <img src="https://readdy.ai/api/search-image?query=modern%20smart%20washing%20machine%20white%20clean%20minimalist%20background%20product%20photography%20studio%20lighting&width=300&height=200&seq=wash1&orientation=landscape" alt="Smart Washing Machine" class="w-full h-32 object-cover object-top rounded-lg">
+                        <div class="absolute top-2 right-2 flex items-center space-x-1">
+                            <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                            <span class="text-xs text-green-600 font-medium">All Good</span>
+                        </div>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-1">Samsung EcoBubble WF45K6200AW</h3>
+                    <p class="text-sm text-gray-500 mb-3">Purchased: March 15, 2024</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-green-600 font-medium">Smart Status: All Good</span>
+                        <button class="text-primary hover:text-primary/80 transition-colors !rounded-button whitespace-nowrap">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-arrow-right-line"></i>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="purchase-card bg-white/70 backdrop-blur-lg rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/20">
+                    <div class="relative mb-4">
+                        <img src="https://readdy.ai/api/search-image?query=modern%20smart%20refrigerator%20stainless%20steel%20clean%20minimalist%20background%20product%20photography%20studio%20lighting&width=300&height=200&seq=fridge1&orientation=landscape" alt="Smart Refrigerator" class="w-full h-32 object-cover object-top rounded-lg">
+                        <div class="absolute top-2 right-2 flex items-center space-x-1">
+                            <div class="w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+                            <span class="text-xs text-yellow-600 font-medium">Update Needed</span>
+                        </div>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-1">LG InstaView ThinQ Refrigerator</h3>
+                    <p class="text-sm text-gray-500 mb-3">Purchased: January 8, 2024</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-yellow-600 font-medium">Smart Status: Update Needed</span>
+                        <button class="text-primary hover:text-primary/80 transition-colors !rounded-button whitespace-nowrap">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-arrow-right-line"></i>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="purchase-card bg-white/70 backdrop-blur-lg rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/20">
+                    <div class="relative mb-4">
+                        <img src="https://readdy.ai/api/search-image?query=modern%20smart%20air%20conditioner%20white%20wall%20mounted%20clean%20minimalist%20background%20product%20photography%20studio%20lighting&width=300&height=200&seq=ac1&orientation=landscape" alt="Smart Air Conditioner" class="w-full h-32 object-cover object-top rounded-lg">
+                        <div class="absolute top-2 right-2 flex items-center space-x-1">
+                            <div class="w-3 h-3 bg-red-400 rounded-full animate-pulse"></div>
+                            <span class="text-xs text-red-600 font-medium">Maintenance Due</span>
+                        </div>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-1">Daikin Inverter Split AC</h3>
+                    <p class="text-sm text-gray-500 mb-3">Purchased: November 22, 2023</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-red-600 font-medium">Smart Status: Maintenance Due</span>
+                        <button class="text-primary hover:text-primary/80 transition-colors !rounded-button whitespace-nowrap">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-arrow-right-line"></i>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="purchase-card bg-white/70 backdrop-blur-lg rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/20">
+                    <div class="relative mb-4">
+                        <img src="https://readdy.ai/api/search-image?query=modern%20smart%20television%204K%20OLED%20black%20screen%20clean%20minimalist%20background%20product%20photography%20studio%20lighting&width=300&height=200&seq=tv1&orientation=landscape" alt="Smart TV" class="w-full h-32 object-cover object-top rounded-lg">
+                        <div class="absolute top-2 right-2 flex items-center space-x-1">
+                            <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                            <span class="text-xs text-green-600 font-medium">All Good</span>
+                        </div>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-1">Sony Bravia XR A80J OLED</h3>
+                    <p class="text-sm text-gray-500 mb-3">Purchased: February 14, 2024</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-green-600 font-medium">Smart Status: All Good</span>
+                        <button class="text-primary hover:text-primary/80 transition-colors !rounded-button whitespace-nowrap">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-arrow-right-line"></i>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="purchase-card bg-white/70 backdrop-blur-lg rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/20">
+                    <div class="relative mb-4">
+                        <img src="https://readdy.ai/api/search-image?query=modern%20smart%20dishwasher%20stainless%20steel%20clean%20minimalist%20background%20product%20photography%20studio%20lighting&width=300&height=200&seq=dish1&orientation=landscape" alt="Smart Dishwasher" class="w-full h-32 object-cover object-top rounded-lg">
+                        <div class="absolute top-2 right-2 flex items-center space-x-1">
+                            <div class="w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+                            <span class="text-xs text-yellow-600 font-medium">Update Needed</span>
+                        </div>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-1">Bosch 800 Series Dishwasher</h3>
+                    <p class="text-sm text-gray-500 mb-3">Purchased: April 3, 2024</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-yellow-600 font-medium">Smart Status: Update Needed</span>
+                        <button class="text-primary hover:text-primary/80 transition-colors !rounded-button whitespace-nowrap">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-arrow-right-line"></i>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="purchase-card bg-white/70 backdrop-blur-lg rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/20">
+                    <div class="relative mb-4">
+                        <img src="https://readdy.ai/api/search-image?query=modern%20smart%20microwave%20oven%20stainless%20steel%20clean%20minimalist%20background%20product%20photography%20studio%20lighting&width=300&height=200&seq=micro1&orientation=landscape" alt="Smart Microwave" class="w-full h-32 object-cover object-top rounded-lg">
+                        <div class="absolute top-2 right-2 flex items-center space-x-1">
+                            <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                            <span class="text-xs text-green-600 font-medium">All Good</span>
+                        </div>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-1">Panasonic Inverter Microwave</h3>
+                    <p class="text-sm text-gray-500 mb-3">Purchased: May 18, 2024</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-green-600 font-medium">Smart Status: All Good</span>
+                        <button class="text-primary hover:text-primary/80 transition-colors !rounded-button whitespace-nowrap">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-arrow-right-line"></i>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Proactive Alerts & Maintenance</h2>
+            <div class="flex space-x-6 overflow-x-auto pb-4">
+                <div class="alert-card min-w-80 bg-red-50/80 backdrop-blur-lg rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-red-100/50">
+                    <div class="flex items-start space-x-4">
+                        <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                            <i class="ri-alarm-warning-line text-red-600 text-xl animate-pulse"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-red-900 mb-2">Filter Replacement Needed</h3>
+                            <p class="text-sm text-red-700 mb-4">Your AC filter needs replacement for optimal performance</p>
+                            <button class="bg-red-600 text-white px-4 py-2 rounded-button text-sm hover:bg-red-700 transition-colors !rounded-button whitespace-nowrap">Order Filter</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert-card min-w-80 bg-yellow-50/80 backdrop-blur-lg rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-yellow-100/50">
+                    <div class="flex items-start space-x-4">
+                        <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                            <i class="ri-download-line text-yellow-600 text-xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-yellow-900 mb-2">Software Update Available</h3>
+                            <p class="text-sm text-yellow-700 mb-4">New features and security improvements for your fridge</p>
+                            <button class="bg-yellow-600 text-white px-4 py-2 rounded-button text-sm hover:bg-yellow-700 transition-colors !rounded-button whitespace-nowrap">Update Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert-card min-w-80 bg-green-50/80 backdrop-blur-lg rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-green-100/50">
+                    <div class="flex items-start space-x-4">
+                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="ri-information-line text-green-600 text-xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-green-900 mb-2">Energy Efficiency Tip</h3>
+                            <p class="text-sm text-green-700 mb-4">Your washing machine is performing 15% better than average</p>
+                            <button class="bg-green-600 text-white px-4 py-2 rounded-button text-sm hover:bg-green-700 transition-colors !rounded-button whitespace-nowrap">View Details</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert-card min-w-80 bg-blue-50/80 backdrop-blur-lg rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-blue-100/50">
+                    <div class="flex items-start space-x-4">
+                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                            <i class="ri-calendar-line text-blue-600 text-xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-blue-900 mb-2">Scheduled Maintenance</h3>
+                            <p class="text-sm text-blue-700 mb-4">Professional cleaning recommended for your dishwasher</p>
+                            <button class="bg-blue-600 text-white px-4 py-2 rounded-button text-sm hover:bg-blue-700 transition-colors !rounded-button whitespace-nowrap">Schedule Service</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Smart Home Status</h2>
+            <div class="bg-white/70 backdrop-blur-lg rounded-2xl p-8 shadow-lg border border-white/20">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="smart-home-visual">
+                        <img src="https://readdy.ai/api/search-image?query=isometric%203D%20smart%20home%20interior%20kitchen%20living%20room%20modern%20appliances%20washing%20machine%20refrigerator%20air%20conditioner%20television%20dishwasher%20microwave%20clean%20minimalist%20design%20soft%20lighting&width=500&height=400&seq=smarthome1&orientation=landscape" alt="Smart Home Visualization" class="w-full h-80 object-cover object-top rounded-xl">
+                    </div>
+                    <div class="space-y-4">
+                        <div class="device-status bg-white/50 rounded-xl p-4 hover:bg-white/70 transition-colors cursor-pointer">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <i class="ri-washing-machine-line text-blue-600"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-gray-900">Washing Machine</h4>
+                                        <p class="text-sm text-gray-500">Last maintenance: 2 weeks ago</p>
+                                    </div>
+                                </div>
+                                <div class="w-3 h-3 bg-green-400 rounded-full"></div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="bg-primary text-white px-3 py-1 rounded text-xs hover:bg-primary/80 transition-colors !rounded-button whitespace-nowrap">Video Help</button>
+                                <button class="bg-gray-100 text-gray-700 px-3 py-1 rounded text-xs hover:bg-gray-200 transition-colors !rounded-button whitespace-nowrap">Talk to Assistant</button>
+                            </div>
+                        </div>
+
+                        <div class="device-status bg-white/50 rounded-xl p-4 hover:bg-white/70 transition-colors cursor-pointer">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                        <i class="ri-fridge-line text-yellow-600"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-gray-900">Refrigerator</h4>
+                                        <p class="text-sm text-gray-500">Temperature fluctuation detected</p>
+                                    </div>
+                                </div>
+                                <div class="w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="bg-primary text-white px-3 py-1 rounded text-xs hover:bg-primary/80 transition-colors !rounded-button whitespace-nowrap">Get Video Help</button>
+                                <button class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded text-xs hover:bg-yellow-200 transition-colors !rounded-button whitespace-nowrap">Send Technician</button>
+                            </div>
+                        </div>
+
+                        <div class="device-status bg-white/50 rounded-xl p-4 hover:bg-white/70 transition-colors cursor-pointer">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                        <i class="ri-air-conditioner-line text-red-600"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-gray-900">Air Conditioner</h4>
+                                        <p class="text-sm text-gray-500">Filter replacement overdue</p>
+                                    </div>
+                                </div>
+                                <div class="w-3 h-3 bg-red-400 rounded-full animate-pulse"></div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700 transition-colors !rounded-button whitespace-nowrap">Order Filter</button>
+                                <button class="bg-gray-100 text-gray-700 px-3 py-1 rounded text-xs hover:bg-gray-200 transition-colors !rounded-button whitespace-nowrap">Schedule Service</button>
+                            </div>
+                        </div>
+
+                        <div class="device-status bg-white/50 rounded-xl p-4 hover:bg-white/70 transition-colors cursor-pointer">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                        <i class="ri-tv-line text-green-600"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-gray-900">Smart TV</h4>
+                                        <p class="text-sm text-gray-500">Firmware 2 versions behind</p>
+                                    </div>
+                                </div>
+                                <div class="w-3 h-3 bg-blue-400 rounded-full"></div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700 transition-colors !rounded-button whitespace-nowrap">Update Firmware</button>
+                                <button class="bg-gray-100 text-gray-700 px-3 py-1 rounded text-xs hover:bg-gray-200 transition-colors !rounded-button whitespace-nowrap">Talk to Assistant</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Predictive Support Feed</h2>
+            <div class="bg-white/70 backdrop-blur-lg rounded-2xl p-6 shadow-lg border border-white/20">
+                <div class="space-y-4">
+                    <div class="prediction-item border-b border-gray-100 pb-4">
+                        <div class="flex items-start justify-between mb-2">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <i class="ri-brain-line text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Temperature Optimization Insight</h4>
+                                    <p class="text-sm text-gray-600">Your refrigerator's temperature has fluctuated recently, affecting energy efficiency by 8%</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">92% Confidence</span>
+                                <button class="text-primary hover:text-primary/80 !rounded-button whitespace-nowrap">
+                                    <div class="w-5 h-5 flex items-center justify-center">
+                                        <i class="ri-arrow-right-line"></i>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="ml-11">
+                            <button class="bg-primary text-white px-4 py-2 rounded-button text-sm hover:bg-primary/80 transition-colors !rounded-button whitespace-nowrap">Optimize Settings</button>
+                        </div>
+                    </div>
+
+                    <div class="prediction-item border-b border-gray-100 pb-4">
+                        <div class="flex items-start justify-between mb-2">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                                    <i class="ri-lightbulb-line text-yellow-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Firmware Update Recommendation</h4>
+                                    <p class="text-sm text-gray-600">Your TV firmware is 2 versions old. New update includes security patches and performance improvements</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full">87% Confidence</span>
+                                <button class="text-primary hover:text-primary/80 !rounded-button whitespace-nowrap">
+                                    <div class="w-5 h-5 flex items-center justify-center">
+                                        <i class="ri-arrow-right-line"></i>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="ml-11">
+                            <button class="bg-yellow-600 text-white px-4 py-2 rounded-button text-sm hover:bg-yellow-700 transition-colors !rounded-button whitespace-nowrap">Schedule Update</button>
+                        </div>
+                    </div>
+
+                    <div class="prediction-item border-b border-gray-100 pb-4">
+                        <div class="flex items-start justify-between mb-2">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                    <i class="ri-leaf-line text-green-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Energy Efficiency Alert</h4>
+                                    <p class="text-sm text-gray-600">Your washing machine is performing 15% better than average. Consider sharing your settings with friends</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">95% Confidence</span>
+                                <button class="text-primary hover:text-primary/80 !rounded-button whitespace-nowrap">
+                                    <div class="w-5 h-5 flex items-center justify-center">
+                                        <i class="ri-arrow-right-line"></i>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="ml-11">
+                            <button class="bg-green-600 text-white px-4 py-2 rounded-button text-sm hover:bg-green-700 transition-colors !rounded-button whitespace-nowrap">Share Settings</button>
+                        </div>
+                    </div>
+
+                    <div class="prediction-item">
+                        <div class="flex items-start justify-between mb-2">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                                    <i class="ri-calendar-check-line text-purple-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Maintenance Prediction</h4>
+                                    <p class="text-sm text-gray-600">Based on usage patterns, your dishwasher will need professional cleaning in 3 weeks</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">89% Confidence</span>
+                                <button class="text-primary hover:text-primary/80 !rounded-button whitespace-nowrap">
+                                    <div class="w-5 h-5 flex items-center justify-center">
+                                        <i class="ri-arrow-right-line"></i>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="ml-11">
+                            <button class="bg-purple-600 text-white px-4 py-2 rounded-button text-sm hover:bg-purple-700 transition-colors !rounded-button whitespace-nowrap">Pre-schedule Service</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <div id="virtual-assistant" class="fixed bottom-6 right-6 z-50">
+        <div class="assistant-widget bg-white/90 backdrop-blur-lg rounded-2xl p-4 shadow-xl border border-white/20 max-w-80 transform translate-y-full opacity-0 transition-all duration-300">
+            <div class="flex items-start space-x-3 mb-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center animate-bounce">
+                    <i class="ri-robot-line text-white"></i>
+                </div>
+                <div class="flex-1">
+                    <h4 class="font-medium text-gray-900 mb-1">Smart Assistant</h4>
+                    <p class="text-sm text-gray-600">Hi! I noticed your AC efficiency is low. Want a cleanup appointment?</p>
+                </div>
+            </div>
+            <div class="flex space-x-2">
+                <button class="bg-primary text-white px-3 py-2 rounded-button text-sm hover:bg-primary/80 transition-colors flex-1 !rounded-button whitespace-nowrap">Yes, Schedule</button>
+                <button class="bg-gray-100 text-gray-700 px-3 py-2 rounded-button text-sm hover:bg-gray-200 transition-colors flex-1 !rounded-button whitespace-nowrap">Not Now</button>
+            </div>
+        </div>
+        <button id="assistant-toggle" class="assistant-button w-14 h-14 bg-gradient-to-br from-primary to-secondary rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all duration-300 animate-bounce">
+            <i class="ri-customer-service-2-line text-white text-xl"></i>
+        </button>
+    </div>
+
+    <script id="assistant-toggle-script">
+        document.addEventListener('DOMContentLoaded', function() {
+            const assistantToggle = document.getElementById('assistant-toggle');
+            const assistantWidget = document.querySelector('.assistant-widget');
+            let isOpen = false;
+
+            assistantToggle.addEventListener('click', function() {
+                if (isOpen) {
+                    assistantWidget.style.transform = 'translateY(100%)';
+                    assistantWidget.style.opacity = '0';
+                    assistantToggle.style.transform = 'rotate(0deg)';
+                } else {
+                    assistantWidget.style.transform = 'translateY(0)';
+                    assistantWidget.style.opacity = '1';
+                    assistantToggle.style.transform = 'rotate(180deg)';
+                }
+                isOpen = !isOpen;
+            });
+        });
+    </script>
+
+    <script id="floating-animation-script">
+        document.addEventListener('DOMContentLoaded', function() {
+            const floatingBlobs = document.querySelectorAll('.floating-blob');
+            
+            floatingBlobs.forEach((blob, index) => {
+                const animationDelay = index * 2;
+                blob.style.animationDelay = `${animationDelay}s`;
+                
+                setInterval(() => {
+                    const randomX = Math.random() * 100;
+                    const randomY = Math.random() * 100;
+                    blob.style.transform = `translate(${randomX}px, ${randomY}px)`;
+                }, 5000 + index * 1000);
+            });
+        });
+    </script>
+
+    <script id="card-hover-effects-script">
+        document.addEventListener('DOMContentLoaded', function() {
+            const purchaseCards = document.querySelectorAll('.purchase-card');
+            const alertCards = document.querySelectorAll('.alert-card');
+            const deviceStatus = document.querySelectorAll('.device-status');
+
+            [...purchaseCards, ...alertCards, ...deviceStatus].forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-8px) scale(1.02)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

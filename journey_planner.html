@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NeoCart - Journey Planner</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(270deg, #dff1ff, #f2e7ff, #dff1ff);
+      background-size: 600% 600%;
+      animation: gradientAnimation 20s ease infinite;
+    }
+
+    @keyframes gradientAnimation {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .floating-card {
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      padding: 1rem;
+      transition: transform 0.3s, box-shadow 0.3s;
+      backdrop-filter: blur(10px);
+    }
+    .floating-card:hover {
+      transform: scale(1.03);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    }
+
+    .floating-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.2;
+      z-index: 0;
+    }
+    .blob-1 { width: 300px; height: 300px; background: #a78bfa; top: -100px; left: -80px; }
+    .blob-2 { width: 400px; height: 400px; background: #60a5fa; bottom: -150px; right: -120px; }
+  </style>
+</head>
+<body class="relative overflow-hidden">
+  <div class="floating-blob blob-1"></div>
+  <div class="floating-blob blob-2"></div>
+
+  <div class="min-h-screen flex flex-col md:flex-row items-center justify-center px-6 py-12 relative z-10">
+    <!-- LEFT SIDE -->
+    <div class="w-full md:w-1/2 p-8">
+      <h1 class="text-4xl font-bold text-gray-800 mb-4">🛍️ Create Your Smart Shopping Journey</h1>
+      <p class="text-gray-700 mb-6">
+        Enter your shopping goal, and our AI will generate a personalized smart plan just for you!
+      </p>
+
+      <input type="text" id="goalInput" placeholder="E.g., Stock pantry, Host BBQ, Baby needs..." class="w-full border border-gray-300 rounded-lg px-4 py-3 mb-4" />
+
+      <label class="block text-gray-700 mb-1">Choose Budget Range</label>
+      <input type="range" min="1" max="5" step="1" value="3" id="budgetSlider" class="w-full mb-4" />
+
+      <div class="flex gap-4">
+        <button onclick="generatePlan()" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700">Start Journey</button>
+        <button onclick="clearPlan()" class="bg-gray-300 text-gray-800 px-6 py-2 rounded-md hover:bg-gray-400">Reset</button>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="w-full md:w-1/2 p-8" id="planOutput">
+      <div class="text-center text-gray-400 italic">Your AI shopping journey will appear here...</div>
+    </div>
+  </div>
+
+  <script>
+    function generatePlan() {
+      const goal = document.getElementById('goalInput').value.trim();
+      const budget = document.getElementById('budgetSlider').value;
+      const output = document.getElementById('planOutput');
+
+      if (!goal) {
+        alert("Please enter a shopping goal.");
+        return;
+      }
+
+      const plans = {
+        "baby": ["Baby Formula", "Wipes", "Diapers", "Onesies"],
+        "bbq": ["Grill", "Hot Dogs", "Buns", "Cola", "Chips", "Plates"],
+        "birthday": ["Cake", "Balloons", "Gifts", "Invitation Cards"]
+      };
+
+      let picked = plans["birthday"];
+      if (goal.toLowerCase().includes("bbq")) picked = plans["bbq"];
+      else if (goal.toLowerCase().includes("baby")) picked = plans["baby"];
+
+      const suffix = ["(Budget)", "(Value)", "(Standard)", "(Premium)", "(Luxury)"][budget - 1];
+
+      output.innerHTML = `
+        <h2 class="text-2xl font-semibold mb-4">🔮 Suggested Plan for: <span class="text-blue-600">${goal}</span></h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          ${picked.map(item => `
+            <div class="floating-card text-center">
+              <img src="https://source.unsplash.com/100x100/?${item.replace(/ /g, '%20')}" class="mx-auto mb-2 rounded shadow-md" alt="${item}">
+              <div class="font-semibold text-gray-800">${item}</div>
+              <div class="text-sm text-gray-600">${suffix}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="mt-6 flex gap-4">
+          <button class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">🛒 Add All to Cart</button>
+          <button class="bg-white text-gray-700 border border-gray-300 px-6 py-2 rounded hover:border-gray-400">📄 Print Plan</button>
+        </div>
+      `;
+    }
+
+    function clearPlan() {
+      document.getElementById('goalInput').value = '';
+      document.getElementById('planOutput').innerHTML = '<div class="text-center text-gray-400 italic">Your AI shopping journey will appear here...</div>';
+    }
+  </script>
+</body>
+</html>

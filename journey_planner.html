@@ -105,10 +105,15 @@
 
       const plans = {
         "baby": ["Baby Formula", "Wipes", "Diapers", "Onesies"],
-        "bbq": ["Grill", "Hot Dogs", "Buns", "Cola", "Chips", "Plates"],
-        "birthday": ["Cake", "Balloons", "Gifts", "Invitation Cards"]
+        "bbq": [{name:"Grill",image:"https://www.google.com/url?sa=i&url=https%3A%2F%2Fpngtree.com%2Ffreepng%2Foutdoor-bbq-grilling-realistic-griller_17561568.html&psig=AOvVaw0b-bOC6mv1N8TdyqlAwiEq&ust=1752572712003000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCICVx6eIvI4DFQAAAAAdAAAAABAE"}, {name:"Hotdogs",image:""}, {name:"Buns",image:""}, {name:"Cola",image:""}, {name:"Chips",image:""}, {name:"Plates",image:""}],
+        "birthday": [{name:"Cake",image:"Assets/cake.jpg"}, {name:"Balloons",image:"Assets/baloons.jpg"},{name:"Gifts",image:"Assets/gifts.jpg"}, {name:"Invitation Cards",image:"Assets/cards.jpg"}]
       };
-
+//       const picked = [
+//   { name: "Item 1", image: "image1.png" },
+//   { name: "Item 2", image: "image2.png" },
+//   { name: "Item 3", image: "image3.png" },
+//   { name: "Item 4", image: "image4.png" }
+// ];
       let picked = plans["birthday"];
       if (goal.toLowerCase().includes("bbq")) picked = plans["bbq"];
       else if (goal.toLowerCase().includes("baby")) picked = plans["baby"];
@@ -120,8 +125,8 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           ${picked.map(item => `
             <div class="floating-card text-center">
-                <img src="image.png" class="mx-auto mb-2 rounded shadow-md w-full h-32 object-cover" alt="${item}">
-              <div class="font-semibold text-gray-800">${item}</div>
+                <img src="${item.image}" class="mx-auto mb-2 rounded shadow-md w-full h-32 object-scale-down" alt="${item.name}">
+              <div class="font-semibold text-gray-800">${item.name}</div>
               <div class="text-sm text-gray-600">${suffix}</div>
             </div>
           `).join('')}

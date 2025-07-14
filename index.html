@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+
 <script>
 tailwind.config = {
 theme: {
@@ -152,10 +153,10 @@ right: -150px;
 </div>
 <nav class="hidden md:flex items-center space-x-8">
 <a href="#" class="text-gray-900 hover:text-primary transition-colors font-medium">Home</a>
-<a href="#" class="text-gray-600 hover:text-primary transition-colors font-medium">My Journey Planner</a>
-<a href="#" class="text-gray-600 hover:text-primary transition-colors font-medium">Virtual Configurator</a>
-<a href="#" class="text-gray-600 hover:text-primary transition-colors font-medium">My Purchases</a>
-<a href="#" class="text-gray-600 hover:text-primary transition-colors font-medium">Community</a>
+<a href="journey_planner.html" class="text-gray-600 hover:text-primary transition-colors font-medium">My Journey Planner</a>
+<a href="AR_product_conigurator.html" class="text-gray-600 hover:text-primary transition-colors font-medium">Virtual Configurator</a>
+<a href="post_purchase_dashboard.html" class="text-gray-600 hover:text-primary transition-colors font-medium">My Purchases</a>
+<a href="communityAI.html" class="text-gray-600 hover:text-primary transition-colors font-medium">Community</a>
 <div class="relative group">
 <a href="#" class="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors font-medium">
 <i class="ri-robot-line text-lg"></i>
@@ -232,7 +233,7 @@ Watch How It Works
 <p class="text-gray-600 mb-8 leading-relaxed">
 Have a goal like hosting a BBQ party or organizing your home office? Let our AI-powered planner create a personalized shopping journey with smart recommendations and timeline management.
 </p>
-<button class="bg-primary text-white px-6 py-3 !rounded-button font-semibold hover:bg-blue-600 transition-colors whitespace-nowrap">
+<button onclick = "document.location='journey_planner.html'"class="bg-primary text-white px-6 py-3 !rounded-button font-semibold hover:bg-blue-600 transition-colors whitespace-nowrap">
 Plan a Goal
 </button>
 </div>
@@ -244,7 +245,7 @@ Plan a Goal
 <p class="text-gray-600 mb-8 leading-relaxed">
 Visualize and personalize products in stunning 3D detail. See exactly how furniture fits in your space, customize colors and materials, and make confident purchase decisions.
 </p>
-<button class="bg-secondary text-white px-6 py-3 !rounded-button font-semibold hover:bg-purple-600 transition-colors whitespace-nowrap">
+<button onclick = "document.location='AR_product_conigurator.html'" class="bg-secondary text-white px-6 py-3 !rounded-button font-semibold hover:bg-purple-600 transition-colors whitespace-nowrap">
 Try the Configurator
 </button>
 </div>
@@ -256,7 +257,7 @@ Try the Configurator
 <p class="text-gray-600 mb-8 leading-relaxed">
 Get smart alerts, maintenance reminders, and personalized care tips for your recent purchases. Never miss warranty deadlines or important product updates again.
 </p>
-<button class="bg-green-500 text-white px-6 py-3 !rounded-button font-semibold hover:bg-green-600 transition-colors whitespace-nowrap">
+<button onclick="document.location = 'post_purchase_dashboard.html'" class="bg-green-500 text-white px-6 py-3 !rounded-button font-semibold hover:bg-green-600 transition-colors whitespace-nowrap">
 Go to My Purchases
 </button>
 </div>
@@ -268,7 +269,7 @@ Go to My Purchases
 <p class="text-gray-600 mb-8 leading-relaxed">
 Discover trending items loved by real users, read authentic reviews, ask questions, and get recommendations from a community of smart shoppers just like you.
 </p>
-<button class="bg-orange-500 text-white px-6 py-3 !rounded-button font-semibold hover:bg-orange-600 transition-colors whitespace-nowrap">
+<button onclick = "document.location='communityAI.html'" class="bg-orange-500 text-white px-6 py-3 !rounded-button font-semibold hover:bg-orange-600 transition-colors whitespace-nowrap">
 Explore Community
 </button>
 </div>
@@ -280,7 +281,7 @@ Explore Community
 <p class="text-gray-600 mb-8 leading-relaxed">
 Effortlessly navigate our store! Access interactive maps and real-time product locations. Find items, departments, and services quickly for a smarter shopping experience.
 </p>
-<button class="bg-red-500 text-white px-6 py-3 !rounded-button font-semibold hover:bg-red-600 transition-colors whitespace-nowrap">
+<button onclick = "document.location='navigation.html'" class="bg-red-500 text-white px-6 py-3 !rounded-button font-semibold hover:bg-red-600 transition-colors whitespace-nowrap">
 Start Navigation
 </button>
 </div>

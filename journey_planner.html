@@ -44,6 +44,25 @@
   </style>
 </head>
 <body class="relative overflow-hidden">
+  <!-- NAvbar -->
+   <!-- Navbar Start -->
+<nav class="w-full bg-white/80 backdrop-blur-md shadow-md fixed top-0 left-0 z-50">
+    <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+        <a href="index.html" class="flex items-center gap-2">
+            <span class="text-2xl font-bold text-primary" style="font-family: 'Pacifico', cursive;">NeoCart</span>
+        </a>
+        <ul class="flex gap-8 items-center text-gray-700 font-medium">
+            <li><a href="index.html" class="hover:text-primary transition-colors">Home</a></li>
+            <li><a href="journey_planner.html" class="hover:text-primary transition-colors">My Journey Planner</a></li>
+            <li><a href="AR_product_conigurator.html" class="hover:text-primary transition-colors"> Virtual Configurator</a></li>
+            
+            <li><a href="post_purchase_dashboard.html" class="hover:text-primary transition-colors">My purchases</a></li>
+            <li><a href="communityAI.html" class="hover:text-primary transition-colors">Community</a></li>
+        </ul>
+    </div>
+</nav>
+<div class="h-20"></div>
+<!-- Navbar End -->
   <div class="floating-blob blob-1"></div>
   <div class="floating-blob blob-2"></div>
 
@@ -64,6 +83,7 @@
         <button onclick="generatePlan()" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700">Start Journey</button>
         <button onclick="clearPlan()" class="bg-gray-300 text-gray-800 px-6 py-2 rounded-md hover:bg-gray-400">Reset</button>
       </div>
+      
     </div>
 
     <!-- RIGHT SIDE -->
@@ -100,7 +120,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           ${picked.map(item => `
             <div class="floating-card text-center">
-              <img src="https://source.unsplash.com/100x100/?${item.replace(/ /g, '%20')}" class="mx-auto mb-2 rounded shadow-md" alt="${item}">
+                <img src="image.png" class="mx-auto mb-2 rounded shadow-md w-full h-32 object-cover" alt="${item}">
               <div class="font-semibold text-gray-800">${item}</div>
               <div class="text-sm text-gray-600">${suffix}</div>
             </div>

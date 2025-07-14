@@ -1,325 +1,793 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>NeoCart AR Navigation</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body {
-      background-color: #f3f4f6; /* A more subtle background */
-      font-family: 'Inter', sans-serif; /* Using Inter font */
-    }
-
-    .store-map-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 600px; /* Fixed height for the container */
-      width: 100%; /* Ensure container takes full width */
-      max-width: 100%; /* Ensure container takes full width */
-    }
-
-    .store-map {
-      /* Updated background image for a more realistic store vibe */
-      background: url('https://cdn.pixabay.com/photo/2017/08/02/09/02/supermarket-2570077_1280.jpg') no-repeat center center;
-      background-size: cover;
-      position: relative;
-      width: 95%; /* Increased width to fill more of the container */
-      height: 95%; /* Increased height to fill more of the container */
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      overflow: hidden;
-      transition: box-shadow 0.3s ease-in-out; /* Keep transition for shadow */
-    }
-
-    /* Overlay for the background theme */
-    .store-map::before {
-      content: '';
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NeoCart - In-Store Navigation</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#8B5CF6",
+              secondary: "#06B6D4",
+            },
+            borderRadius: {
+              none: "0px",
+              sm: "4px",
+              DEFAULT: "8px",
+              md: "12px",
+              lg: "16px",
+              xl: "20px",
+              "2xl": "24px",
+              "3xl": "32px",
+              full: "9999px",
+              button: "8px",
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
+    />
+    <style>
+      :where([class^="ri-"])::before {
+      content: "\f3c2";
+      }
+      body {
+      font-family: 'Poppins', sans-serif;
+      }
+      .animated-gradient {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background-size: 400% 400%;
+      animation: gradientShift 8s ease infinite;
+      }
+      @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+      }
+      .floating-blob {
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      /* Slightly reduced opacity to let more of the new background image show */
-      background: rgba(0, 0, 0, 0.15);
-      z-index: 1; /* Ensure it's above the background image but below elements */
-      border-radius: 20px; /* Match parent border-radius */
-    }
-
-    /* Hover effect to make it more interactive */
-    .store-map:hover {
-      box-shadow: 0 15px 45px rgba(0,0,0,0.3); /* Keep hover shadow effect */
-    }
-
-    .dot, .destination {
-      width: 20px;
-      height: 20px;
       border-radius: 50%;
+      filter: blur(40px);
+      opacity: 0.3;
+      animation: float 6s ease-in-out infinite;
+      }
+      .blob-1 {
+      width: 200px;
+      height: 200px;
+      background: rgba(139, 92, 246, 0.3);
+      top: 10%;
+      left: 10%;
+      animation-delay: 0s;
+      }
+      .blob-2 {
+      width: 150px;
+      height: 150px;
+      background: rgba(6, 182, 212, 0.3);
+      top: 60%;
+      right: 20%;
+      animation-delay: 2s;
+      }
+      .blob-3 {
+      width: 100px;
+      height: 100px;
+      background: rgba(139, 92, 246, 0.2);
+      bottom: 20%;
+      left: 30%;
+      animation-delay: 4s;
+      }
+      @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      33% { transform: translateY(-20px) rotate(120deg); }
+      66% { transform: translateY(10px) rotate(240deg); }
+      }
+      .glow-effect {
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+      transition: all 0.3s ease;
+      }
+      .glow-effect:hover {
+      box-shadow: 0 0 30px rgba(139, 92, 246, 0.5);
+      }
+      .ar-overlay {
+      background: linear-gradient(45deg, rgba(139, 92, 246, 0.1), rgba(6, 182, 212, 0.1));
+      backdrop-filter: blur(2px);
+      }
+      .pulse-dot {
+      animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.2); opacity: 0.7; }
+      100% { transform: scale(1); opacity: 1; }
+      }
+      .arrow-path {
+      animation: arrowMove 3s ease-in-out infinite;
+      }
+      @keyframes arrowMove {
+      0%, 100% { transform: translateX(0px); }
+      50% { transform: translateX(10px); }
+      }
+      .isometric-grid {
+      background-image:
+      linear-gradient(30deg, rgba(139, 92, 246, 0.1) 12%, transparent 12.5%, transparent 87%, rgba(139, 92, 246, 0.1) 87.5%, rgba(139, 92, 246, 0.1)),
+      linear-gradient(150deg, rgba(139, 92, 246, 0.1) 12%, transparent 12.5%, transparent 87%, rgba(139, 92, 246, 0.1) 87.5%, rgba(139, 92, 246, 0.1)),
+      linear-gradient(30deg, rgba(139, 92, 246, 0.1) 12%, transparent 12.5%, transparent 87%, rgba(139, 92, 246, 0.1) 87.5%, rgba(139, 92, 246, 0.1)),
+      linear-gradient(150deg, rgba(139, 92, 246, 0.1) 12%, transparent 12.5%, transparent 87%, rgba(139, 92, 246, 0.1) 87.5%, rgba(139, 92, 246, 0.1));
+      background-size: 80px 140px;
+      background-position: 0 0, 0 0, 40px 70px, 40px 70px;
+      }
+      .category-chip {
+      transition: all 0.3s ease;
+      }
+      .category-chip:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+      }
+      .confetti {
       position: absolute;
-      z-index: 10; /* Ensure dots are above the overlay */
-    }
-
-    .dot {
-      background-color: #3B82F6; /* Blue dot */
-      box-shadow: 0 0 12px #3B82F6;
-      transition: all 0.8s ease-in-out;
-    }
-
-    .destination {
-      background-color: #10B981; /* Green destination */
-      box-shadow: 0 0 10px #10B981aa;
-      animation: pulse 1.5s infinite ease-in-out; /* Add pulsing animation */
-    }
-
-    /* Keyframes for pulsing animation */
-    @keyframes pulse {
-      0% {
-        transform: scale(1);
-        box-shadow: 0 0 10px #10B981aa;
-      }
-      50% {
-        transform: scale(1.2);
-        box-shadow: 0 0 20px #10B981;
-      }
-      100% {
-        transform: scale(1);
-        box-shadow: 0 0 10px #10B981aa;
-      }
-    }
-
-    .aisle-label {
-      position: absolute;
-      font-size: 12px;
-      background: rgba(255,255,255,0.85);
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      padding: 2px 6px;
-      z-index: 5; /* Ensure labels are above the overlay */
-      font-weight: bold;
-      color: #333; /* Darker text for readability */
-    }
-
-    /* Styles for the breadcrumb path dots */
-    .path-dot {
       width: 10px;
       height: 10px;
-      border-radius: 50%;
-      background-color: rgba(59, 130, 246, 0.5); /* Semi-transparent blue */
-      position: absolute;
-      z-index: 8; /* Below main dot, above overlay */
-      opacity: 0; /* Start hidden */
-      animation: fadeOut 1s forwards; /* Fade out animation */
-    }
-
-    /* Keyframes for fading out path dots */
-    @keyframes fadeOut {
-      0% { opacity: 1; transform: scale(1); }
-      100% { opacity: 0; transform: scale(0.5); }
-    }
-
-    /* Custom message box styles */
-    .message-box {
-      background-color: #fff;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 1rem;
-      margin-top: 1rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      text-align: center;
-      font-weight: 500;
-      color: #333;
-      min-height: 50px; /* Ensure it has some height even when empty */
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .message-box.error {
-      background-color: #fee2e2;
-      border-color: #ef4444;
-      color: #ef4444;
-    }
-
-    .message-box.success {
-      background-color: #d1fae5;
-      border-color: #10b981;
-      color: #10b981;
-    }
-  </style>
-</head>
-<body class="bg-gray-100 font-sans">
-
-  <div class="max-w-5xl mx-auto px-6 py-12">
-    <h1 class="text-4xl font-bold text-gray-800 mb-4">🛒 NeoCart: In-Store Navigation with Smart Routing</h1>
-    <p class="text-gray-600 mb-6">Simulate a smart path to your desired product through interactive aisles using AR navigation.</p>
-
-    <!-- Input field and buttons -->
-    <div class="mb-6 flex flex-col md:flex-row gap-4">
-      <input id="productInput" type="text" placeholder="Enter a product (e.g. baby food, eggs, makeup)" class="border border-gray-300 rounded-md px-4 py-2 w-full md:w-1/2 focus:ring-blue-500 focus:border-blue-500" />
-      <button id="startButton" onclick="startNavigation()" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Start Navigation</button>
-      <button id="resetButton" onclick="resetNavigation()" class="bg-gray-300 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-400 transition-colors">Reset</button>
-    </div>
-
-    <!-- Custom Message Box -->
-    <div id="messageBox" class="message-box mb-6 hidden"></div>
-
-    <!-- Store map container -->
-    <div class="store-map-container">
-      <div class="store-map" id="storeMap">
-        <!-- Dot & destination marker -->
-        <div class="dot" id="dot" style="top: 85%; left: 10%;"></div>
-        <div class="destination" id="destDot" style="top: 20%; left: 75%; display: none;"></div>
-
-        <!-- Aisle Labels -->
-        <div class="aisle-label" style="top: 88%; left: 12%;">Entrance</div>
-        <div class="aisle-label" style="top: 60%; left: 28%;">Aisle 2</div>
-        <div class="aisle-label" style="top: 45%; left: 50%;">Aisle 4</div>
-        <div class="aisle-label" style="top: 25%; left: 72%;">Destination</div>
+      background: #8B5CF6;
+      animation: confetti-fall 3s linear infinite;
+      }
+      @keyframes confetti-fall {
+      0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+      }
+    </style>
+  </head>
+  <body class="min-h-screen animated-gradient relative overflow-y-auto">
+    <div class="floating-blob blob-1"></div>
+    <div class="floating-blob blob-2"></div>
+    <div class="floating-blob blob-3"></div>
+    <div class="relative z-10">
+      <header class="text-center py-8">
+        <div class="flex items-center justify-center gap-3">
+          <h1 class="text-4xl font-bold text-white">NeoCart</h1>
+          <span class="text-4xl">🛒</span>
+        </div>
+        <p class="text-white/80 mt-2 text-lg">Smart In-Store Navigation</p>
+      </header>
+      <div class="max-w-6xl mx-auto px-6 pb-8 overflow-y-auto">
+        <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8">
+          <div class="grid lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 space-y-6">
+              <div class="space-y-4">
+                <h2 class="text-2xl font-semibold text-gray-800">
+                  Find Your Item
+                </h2>
+                <div class="relative">
+                  <input
+                    type="text"
+                    placeholder="Search item (e.g., eggs, shampoo, baby food)"
+                    class="w-full px-6 py-4 text-lg border-2 border-gray-200 rounded-xl focus:border-primary focus:outline-none transition-all duration-300 pr-16"
+                    id="searchInput"
+                  />
+                  <div
+                    class="absolute right-4 top-1/2 transform -translate-y-1/2 flex gap-2"
+                  >
+                    <button
+                      class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-primary transition-colors"
+                    >
+                      <i class="ri-mic-line text-xl"></i>
+                    </button>
+                    <button
+                      class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-primary transition-colors"
+                    >
+                      <i class="ri-search-line text-xl"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="flex gap-3 overflow-x-auto pb-2">
+                  <button
+                    class="category-chip px-4 py-2 bg-primary/10 text-primary rounded-full whitespace-nowrap font-medium"
+                  >
+                    🥛 Dairy & Eggs
+                  </button>
+                  <button
+                    class="category-chip px-4 py-2 bg-gray-100 text-gray-700 rounded-full whitespace-nowrap font-medium hover:bg-primary/10 hover:text-primary"
+                  >
+                    🧴 Personal Care
+                  </button>
+                  <button
+                    class="category-chip px-4 py-2 bg-gray-100 text-gray-700 rounded-full whitespace-nowrap font-medium hover:bg-primary/10 hover:text-primary"
+                  >
+                    👶 Baby Products
+                  </button>
+                  <button
+                    class="category-chip px-4 py-2 bg-gray-100 text-gray-700 rounded-full whitespace-nowrap font-medium hover:bg-primary/10 hover:text-primary"
+                  >
+                    🍞 Bakery
+                  </button>
+                  <button
+                    class="category-chip px-4 py-2 bg-gray-100 text-gray-700 rounded-full whitespace-nowrap font-medium hover:bg-primary/10 hover:text-primary"
+                  >
+                    🥫 Canned Goods
+                  </button>
+                </div>
+              </div>
+              <div class="relative">
+                <div
+                  class="bg-gray-900 rounded-2xl overflow-hidden relative h-96 isometric-grid"
+                >
+                  <div
+                    class="ar-overlay absolute inset-0 flex items-center justify-center"
+                  >
+                    <div class="text-center text-white" id="cameraStatus">
+                      <div
+                        class="w-20 h-20 flex items-center justify-center mx-auto mb-4 bg-white/20 rounded-full"
+                      >
+                        <i class="ri-camera-line text-3xl"></i>
+                      </div>
+                      <p class="text-lg font-medium">Camera Ready</p>
+                      <p class="text-sm text-white/80 mt-1">
+                        Tap "Start Navigation" to begin AR guidance
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    class="absolute top-4 left-4 bg-black/50 text-white px-3 py-2 rounded-lg text-sm"
+                    id="statusIndicator"
+                  >
+                    <i class="ri-navigation-line mr-2"></i>
+                    Ready to navigate
+                  </div>
+                  <div class="absolute inset-0 hidden" id="arElements">
+                    <div
+                      class="arrow-path absolute top-1/2 left-1/4 transform -translate-y-1/2"
+                    >
+                      <i
+                        class="ri-arrow-right-line text-primary text-4xl drop-shadow-lg"
+                      ></i>
+                    </div>
+                    <div
+                      class="arrow-path absolute top-1/3 left-1/2 transform -translate-y-1/2"
+                      style="animation-delay: 0.5s;"
+                    >
+                      <i
+                        class="ri-arrow-right-line text-primary text-4xl drop-shadow-lg"
+                      ></i>
+                    </div>
+                    <div
+                      class="arrow-path absolute top-2/3 right-1/4 transform -translate-y-1/2"
+                      style="animation-delay: 1s;"
+                    >
+                      <i
+                        class="ri-arrow-down-line text-primary text-4xl drop-shadow-lg"
+                      ></i>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="absolute bottom-4 left-4 right-4 flex justify-center gap-4"
+                >
+                  <button
+                    class="bg-primary text-white px-8 py-3 rounded-button font-semibold glow-effect whitespace-nowrap !rounded-button"
+                    id="startNavBtn"
+                  >
+                    <i class="ri-navigation-fill mr-2"></i>
+                    Start Navigation
+                  </button>
+                  <button
+                    class="bg-white/90 text-gray-700 px-6 py-3 rounded-button font-medium border border-gray-200 whitespace-nowrap !rounded-button"
+                    id="resetBtn"
+                  >
+                    <i class="ri-refresh-line mr-2"></i>
+                    Reset
+                  </button>
+                  <button
+                    class="bg-white/90 text-gray-700 px-6 py-3 rounded-button font-medium border border-gray-200 whitespace-nowrap !rounded-button"
+                    id="recenterBtn"
+                  >
+                    <i class="ri-crosshair-line mr-2"></i>
+                    Recenter
+                  </button>
+                </div>
+              </div>
+              <div
+                class="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-xl p-6"
+                id="feedbackSection"
+              >
+                <div class="flex items-center gap-4">
+                  <div
+                    class="w-12 h-12 flex items-center justify-center bg-primary/20 rounded-full"
+                  >
+                    <i class="ri-footprint-line text-primary text-xl"></i>
+                  </div>
+                  <div>
+                    <p
+                      class="text-lg font-semibold text-gray-800"
+                      id="distanceText"
+                    >
+                      Ready to guide you
+                    </p>
+                    <p class="text-gray-600" id="directionText">
+                      Search for an item to start navigation
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="space-y-6">
+              <div class="bg-gray-50 rounded-2xl p-6">
+                <h3
+                  class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2"
+                >
+                  <i class="ri-map-2-line text-primary"></i>
+                  Store Map
+                </h3>
+                <div class="relative bg-white rounded-xl p-4 h-64">
+                  <div
+                    class="absolute inset-4 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg overflow-hidden"
+                  >
+                    <div class="grid grid-cols-4 gap-2 p-4 h-full">
+                      <div
+                        class="bg-primary/20 rounded text-xs flex items-center justify-center font-medium"
+                      >
+                        Dairy
+                      </div>
+                      <div
+                        class="bg-gray-300 rounded text-xs flex items-center justify-center font-medium"
+                      >
+                        Produce
+                      </div>
+                      <div
+                        class="bg-gray-300 rounded text-xs flex items-center justify-center font-medium"
+                      >
+                        Meat
+                      </div>
+                      <div
+                        class="bg-gray-300 rounded text-xs flex items-center justify-center font-medium"
+                      >
+                        Deli
+                      </div>
+                      <div
+                        class="bg-gray-300 rounded text-xs flex items-center justify-center font-medium"
+                      >
+                        Bakery
+                      </div>
+                      <div
+                        class="bg-secondary/20 rounded text-xs flex items-center justify-center font-medium"
+                      >
+                        Personal
+                      </div>
+                      <div
+                        class="bg-gray-300 rounded text-xs flex items-center justify-center font-medium"
+                      >
+                        Health
+                      </div>
+                      <div
+                        class="bg-gray-300 rounded text-xs flex items-center justify-center font-medium"
+                      >
+                        Baby
+                      </div>
+                      <div
+                        class="bg-gray-300 rounded text-xs flex items-center justify-center font-medium"
+                      >
+                        Frozen
+                      </div>
+                      <div
+                        class="bg-gray-300 rounded text-xs flex items-center justify-center font-medium"
+                      >
+                        Snacks
+                      </div>
+                      <div
+                        class="bg-gray-300 rounded text-xs flex items-center justify-center font-medium"
+                      >
+                        Drinks
+                      </div>
+                      <div
+                        class="bg-gray-300 rounded text-xs flex items-center justify-center font-medium"
+                      >
+                        Checkout
+                      </div>
+                    </div>
+                    <div
+                      class="absolute top-6 left-6 w-3 h-3 bg-blue-500 rounded-full pulse-dot"
+                      id="userDot"
+                    ></div>
+                    <div
+                      class="absolute bottom-6 right-6 w-3 h-3 bg-red-500 rounded-full pulse-dot"
+                      id="destinationDot"
+                    ></div>
+                    <svg
+                      class="absolute inset-0 w-full h-full pointer-events-none"
+                      id="pathSvg"
+                    >
+                      <path
+                        d="M 24 24 L 120 24 L 120 80 L 200 80"
+                        stroke="#8B5CF6"
+                        stroke-width="3"
+                        fill="none"
+                        stroke-dasharray="5,5"
+                        opacity="0.7"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-gray-50 rounded-2xl p-6">
+                <h3
+                  class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2"
+                >
+                  <i class="ri-time-line text-primary"></i>
+                  Recent Searches
+                </h3>
+                <div class="space-y-3">
+                  <div
+                    class="flex items-center justify-between p-3 bg-white rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+                  >
+                    <div class="flex items-center gap-3">
+                      <div
+                        class="w-8 h-8 flex items-center justify-center bg-primary/10 rounded-full"
+                      >
+                        <i class="ri-drop-line text-primary"></i>
+                      </div>
+                      <span class="font-medium text-gray-700"
+                        >Organic Milk</span
+                      >
+                    </div>
+                    <i class="ri-arrow-right-line text-gray-400"></i>
+                  </div>
+                  <div
+                    class="flex items-center justify-between p-3 bg-white rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+                  >
+                    <div class="flex items-center gap-3">
+                      <div
+                        class="w-8 h-8 flex items-center justify-center bg-secondary/10 rounded-full"
+                      >
+                        <i class="ri-scissors-line text-secondary"></i>
+                      </div>
+                      <span class="font-medium text-gray-700">Shampoo</span>
+                    </div>
+                    <i class="ri-arrow-right-line text-gray-400"></i>
+                  </div>
+                  <div
+                    class="flex items-center justify-between p-3 bg-white rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+                  >
+                    <div class="flex items-center gap-3">
+                      <div
+                        class="w-8 h-8 flex items-center justify-center bg-pink-100 rounded-full"
+                      >
+                        <i class="ri-heart-line text-pink-500"></i>
+                      </div>
+                      <span class="font-medium text-gray-700"
+                        >Baby Formula</span
+                      >
+                    </div>
+                    <i class="ri-arrow-right-line text-gray-400"></i>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl p-6 text-center"
+              >
+                <div
+                  class="w-16 h-16 flex items-center justify-center bg-white rounded-full mx-auto mb-4"
+                >
+                  <i class="ri-magic-line text-primary text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">
+                  AR Navigation Tips
+                </h3>
+                <p class="text-gray-600 text-sm leading-relaxed">
+                  Hold your phone steady and follow the purple arrows. The
+                  system will guide you through the most efficient path to your
+                  destination.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-
-  <!-- JS Navigation Logic -->
-  <script>
-    const dot = document.getElementById("dot");
-    const destDot = document.getElementById("destDot");
-    const productInput = document.getElementById("productInput");
-    const startButton = document.getElementById("startButton");
-    const resetButton = document.getElementById("resetButton");
-    const messageBox = document.getElementById("messageBox");
-    const storeMap = document.getElementById("storeMap"); // Get the store map element
-    let navigationInterval; // To store the interval ID for clearing
-
-    const aisleMap = {
-      "baby food": [
-        { top: "85%", left: "10%" },  // Entrance
-        { top: "60%", left: "28%" },  // Aisle 2
-        { top: "45%", left: "50%" },  // Aisle 4
-        { top: "20%", left: "75%" }  // Final
-      ],
-      "makeup": [
-        { top: "85%", left: "10%" },
-        { top: "60%", left: "28%" },
-        { top: "40%", left: "65%" },
-        { top: "25%", left: "80%" }
-      ],
-      "eggs": [
-        { top: "85%", left: "10%" },
-        { top: "65%", left: "35%" },
-        { top: "50%", left: "55%" },
-        { top: "30%", left: "68%" }
-      ]
-    };
-
-    /**
-     * Displays a message in the message box.
-     * @param {string} message - The message to display.
-     * @param {string} type - The type of message ('success', 'error', or '').
-     */
-    function showMessage(message, type = '') {
-      messageBox.textContent = message;
-      messageBox.className = `message-box mb-6 ${type}`; // Reset classes and apply new type
-      messageBox.classList.remove('hidden'); // Make sure it's visible
-    }
-
-    /**
-     * Clears the message box.
-     */
-    function clearMessage() {
-      messageBox.classList.add('hidden');
-      messageBox.textContent = '';
-      messageBox.className = 'message-box mb-6'; // Reset classes
-    }
-
-    /**
-     * Clears all path dots from the store map.
-     */
-    function clearPathDots() {
-      const pathDots = storeMap.querySelectorAll('.path-dot');
-      pathDots.forEach(dot => dot.remove());
-    }
-
-    /**
-     * Creates and adds a path dot at a given position.
-     * @param {string} top - The top CSS property (e.g., "50%").
-     * @param {string} left - The left CSS property (e.g., "50%").
-     */
-    function createPathDot(top, left) {
-      const pathDot = document.createElement('div');
-      pathDot.classList.add('path-dot');
-      pathDot.style.top = top;
-      pathDot.style.left = left;
-      storeMap.appendChild(pathDot);
-    }
-
-    /**
-     * Starts the navigation process.
-     */
-    function startNavigation() {
-      clearMessage(); // Clear any previous messages
-      clearPathDots(); // Clear any existing path dots
-      const input = productInput.value.toLowerCase().trim();
-      const route = aisleMap[input];
-
-      if (!input) {
-        showMessage("Please enter a product to navigate.", "error");
-        return;
-      }
-
-      if (!route) {
-        showMessage("We couldn't find that product. Try: baby food, makeup, eggs", "error");
-        return;
-      }
-
-      // Disable start button and input during navigation
-      startButton.disabled = true;
-      productInput.disabled = true;
-      showMessage(`Navigating to ${input}...`, "success");
-
-      // Set initial dot position
-      dot.style.top = route[0].top;
-      dot.style.left = route[0].left;
-
-      // Set destination dot position and display it
-      destDot.style.display = "block";
-      destDot.style.top = route[route.length - 1].top;
-      destDot.style.left = route[route.length - 1].left;
-
-      let step = 1;
-      navigationInterval = setInterval(() => {
-        if (step >= route.length) {
-          clearInterval(navigationInterval);
-          startButton.disabled = false; // Re-enable button
-          productInput.disabled = false; // Re-enable input
-          showMessage(`Arrived at ${input}!`, "success");
-        } else {
-          // Create a path dot at the current position before moving
-          createPathDot(dot.style.top, dot.style.left);
-
-          // Move the main dot to the next position
-          dot.style.top = route[step].top;
-          dot.style.left = route[step].left;
-          step++;
+    <script id="navigation-controls">
+      document.addEventListener("DOMContentLoaded", function () {
+        const startNavBtn = document.getElementById("startNavBtn");
+        const resetBtn = document.getElementById("resetBtn");
+        const recenterBtn = document.getElementById("recenterBtn");
+        const arElements = document.getElementById("arElements");
+        const statusIndicator = document.getElementById("statusIndicator");
+        const cameraStatus = document.getElementById("cameraStatus");
+        const distanceText = document.getElementById("distanceText");
+        const directionText = document.getElementById("directionText");
+        let navigationActive = false;
+        let currentDistance = 15;
+        let cameraStream = null;
+        async function startCamera() {
+          try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            const videoElement = document.createElement("video");
+            videoElement.srcObject = stream;
+            videoElement.autoplay = true;
+            videoElement.classList.add(
+              "absolute",
+              "inset-0",
+              "w-full",
+              "h-full",
+              "object-cover",
+            );
+            document.querySelector(".isometric-grid").prepend(videoElement);
+            cameraStream = stream;
+          } catch (err) {
+            console.error("Camera access error:", err);
+            statusIndicator.innerHTML =
+              '<i class="ri-error-warning-line mr-2"></i>Camera access denied';
+          }
         }
-      }, 1000); // Move every 1 second
-    }
-
-    /**
-     * Resets the navigation to its initial state.
-     */
-    function resetNavigation() {
-      clearInterval(navigationInterval); // Stop any ongoing navigation
-      dot.style.top = "85%";
-      dot.style.left = "10%";
-      destDot.style.display = "none";
-      productInput.value = "";
-      startButton.disabled = false; // Re-enable start button
-      productInput.disabled = false; // Re-enable input
-      clearMessage(); // Clear message box
-      clearPathDots(); // Clear all path dots
-    }
-  </script>
-
-</body>
+        function stopCamera() {
+          if (cameraStream) {
+            cameraStream.getTracks().forEach((track) => track.stop());
+            const videoElement = document.querySelector(".isometric-grid video");
+            if (videoElement) {
+              videoElement.remove();
+            }
+            cameraStream = null;
+          }
+        }
+        startNavBtn.addEventListener("click", async function () {
+          const searchInput = document.getElementById("searchInput");
+          const searchQuery = searchInput.value.trim();
+          if (navigationActive) {
+            navigationActive = false;
+            stopCamera();
+            document.getElementById("arElements").classList.add("hidden");
+            document.getElementById("cameraStatus").style.display = "block";
+            document.getElementById("statusIndicator").innerHTML =
+              '<i class="ri-navigation-line mr-2"></i>Ready to navigate';
+            document.getElementById("statusIndicator").className =
+              "absolute top-4 left-4 bg-black/50 text-white px-3 py-2 rounded-lg text-sm";
+            document.getElementById("startNavBtn").innerHTML =
+              '<i class="ri-navigation-fill mr-2"></i>Start Navigation';
+            document.getElementById("startNavBtn").className =
+              "bg-primary text-white px-8 py-3 rounded-button font-semibold glow-effect whitespace-nowrap !rounded-button";
+            document.getElementById("distanceText").textContent =
+              "Ready to guide you";
+            document.getElementById("directionText").textContent =
+              "Search for an item to start navigation";
+            currentDistance = 15;
+            return;
+          }
+          if (!searchQuery) {
+            const feedbackDiv = document.createElement("div");
+            feedbackDiv.className =
+              "fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg z-50";
+            feedbackDiv.textContent = "Please search for an item first";
+            document.body.appendChild(feedbackDiv);
+            setTimeout(() => feedbackDiv.remove(), 3000);
+            return;
+          }
+          navigationActive = true;
+          await startCamera();
+          document.getElementById("arElements").classList.remove("hidden");
+          document.getElementById("cameraStatus").style.display = "none";
+          document.getElementById("statusIndicator").innerHTML =
+            '<i class="ri-navigation-fill mr-2"></i>Navigation Active';
+          document.getElementById("statusIndicator").className =
+            "absolute top-4 left-4 bg-primary/90 text-white px-3 py-2 rounded-lg text-sm";
+          document.getElementById("startNavBtn").innerHTML =
+            '<i class="ri-stop-line mr-2"></i>Stop Navigation';
+          document.getElementById("startNavBtn").className =
+            "bg-red-500 text-white px-8 py-3 rounded-button font-semibold glow-effect whitespace-nowrap !rounded-button";
+          updateNavigationFeedback(searchQuery);
+          startDistanceCountdown();
+        });
+        resetBtn.addEventListener("click", function () {
+          stopNavigation();
+          resetUI();
+        });
+        recenterBtn.addEventListener("click", function () {
+          if (navigationActive) {
+            statusIndicator.innerHTML =
+              '<i class="ri-crosshair-line mr-2"></i>Recentering...';
+            const arElements = document.getElementById("arElements");
+            arElements.style.transition = "transform 0.5s ease";
+            arElements.style.transform = "scale(0.8)";
+            setTimeout(() => {
+              arElements.style.transform = "scale(1)";
+              statusIndicator.innerHTML =
+                '<i class="ri-navigation-fill mr-2"></i>Navigation Active';
+            }, 1500);
+            const userDot = document.getElementById("userDot");
+            userDot.style.transition = "all 0.5s ease";
+            userDot.style.transform = "translate(20px, 20px)";
+            setTimeout(() => {
+              userDot.style.transform = "translate(0, 0)";
+            }, 1500);
+          }
+        });
+        function stopNavigation() {
+          navigationActive = false;
+          stopCamera();
+          arElements.classList.add("hidden");
+          cameraStatus.style.display = "block";
+          statusIndicator.innerHTML =
+            '<i class="ri-navigation-line mr-2"></i>Ready to navigate';
+          statusIndicator.className =
+            "absolute top-4 left-4 bg-black/50 text-white px-3 py-2 rounded-lg text-sm";
+          startNavBtn.innerHTML =
+            '<i class="ri-navigation-fill mr-2"></i>Start Navigation';
+          startNavBtn.className =
+            "bg-primary text-white px-8 py-3 rounded-button font-semibold glow-effect whitespace-nowrap !rounded-button";
+          resetUI();
+        }
+        function resetUI() {
+          distanceText.textContent = "Ready to guide you";
+          directionText.textContent = "Search for an item to start navigation";
+          currentDistance = 15;
+        }
+        function updateNavigationFeedback(searchQuery = "") {
+          const lowerQuery = searchQuery.toLowerCase();
+          let aisle = "General";
+          let shelf = "2";
+          if (
+            lowerQuery.includes("milk") ||
+            lowerQuery.includes("egg") ||
+            lowerQuery.includes("dairy")
+          ) {
+            aisle = "Dairy & Eggs";
+            shelf = "1";
+          } else if (
+            lowerQuery.includes("shampoo") ||
+            lowerQuery.includes("soap") ||
+            lowerQuery.includes("personal")
+          ) {
+            aisle = "Personal Care";
+            shelf = "4";
+          } else if (
+            lowerQuery.includes("baby") ||
+            lowerQuery.includes("formula") ||
+            lowerQuery.includes("diaper")
+          ) {
+            aisle = "Baby Products";
+            shelf = "3";
+          } else if (lowerQuery.includes("bread") || lowerQuery.includes("bakery")) {
+            aisle = "Bakery";
+            shelf = "2";
+          }
+          if (currentDistance > 0) {
+            distanceText.textContent = `You're ${currentDistance} steps away`;
+            directionText.textContent = `Follow the purple arrows to ${aisle} Aisle`;
+          } else {
+            distanceText.textContent = "Destination reached! 🎉";
+            directionText.textContent = `${searchQuery} is on your right, shelf ${shelf}`;
+            showConfetti();
+          }
+        }
+        function startDistanceCountdown() {
+          const interval = setInterval(() => {
+            if (!navigationActive) {
+              clearInterval(interval);
+              return;
+            }
+            if (currentDistance > 0) {
+              currentDistance--;
+              updateNavigationFeedback();
+            } else {
+              clearInterval(interval);
+              setTimeout(() => {
+                stopNavigation();
+              }, 3000);
+            }
+          }, 2000);
+        }
+        function showConfetti() {
+          for (let i = 0; i < 20; i++) {
+            setTimeout(() => {
+              const confetti = document.createElement("div");
+              confetti.className = "confetti";
+              confetti.style.left = Math.random() * 100 + "%";
+              confetti.style.backgroundColor = [
+                "#8B5CF6",
+                "#06B6D4",
+                "#F59E0B",
+                "#EF4444",
+              ][Math.floor(Math.random() * 4)];
+              confetti.style.animationDelay = Math.random() * 3 + "s";
+              document.body.appendChild(confetti);
+              setTimeout(() => {
+                confetti.remove();
+              }, 3000);
+            }, i * 100);
+          }
+        }
+      });
+    </script>
+    <script id="search-functionality">
+      document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("searchInput");
+        const categoryChips = document.querySelectorAll(".category-chip");
+        const distanceText = document.getElementById("distanceText");
+        const directionText = document.getElementById("directionText");
+        let currentSearchItem = "";
+        searchInput.addEventListener("keypress", function (e) {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            const query = this.value.trim();
+            if (query.length > 0) {
+              currentSearchItem = query;
+              updateSearchResults(query);
+            }
+          }
+        });
+        searchInput.addEventListener("input", function () {
+          const query = this.value.trim();
+          if (query.length > 0) {
+            updateSearchResults(query);
+          }
+        });
+        categoryChips.forEach((chip) => {
+          chip.addEventListener("click", function () {
+            categoryChips.forEach((c) => {
+              c.className =
+                "category-chip px-4 py-2 bg-gray-100 text-gray-700 rounded-full whitespace-nowrap font-medium hover:bg-primary/10 hover:text-primary";
+            });
+            this.className =
+              "category-chip px-4 py-2 bg-primary/10 text-primary rounded-full whitespace-nowrap font-medium";
+            const categoryText = this.textContent.trim();
+            searchInput.value = categoryText.split(" ").slice(1).join(" ");
+            updateSearchResults(categoryText);
+          });
+        });
+        function updateSearchResults(query) {
+          const lowerQuery = query.toLowerCase();
+          let aisle = "General";
+          let distance = Math.floor(Math.random() * 20) + 5;
+          if (
+            lowerQuery.includes("milk") ||
+            lowerQuery.includes("egg") ||
+            lowerQuery.includes("dairy")
+          ) {
+            aisle = "Dairy & Eggs Aisle";
+            distance = 8;
+          } else if (
+            lowerQuery.includes("shampoo") ||
+            lowerQuery.includes("soap") ||
+            lowerQuery.includes("personal")
+          ) {
+            aisle = "Personal Care Aisle";
+            distance = 12;
+          } else if (
+            lowerQuery.includes("baby") ||
+            lowerQuery.includes("formula") ||
+            lowerQuery.includes("diaper")
+          ) {
+            aisle = "Baby Products Aisle";
+            distance = 15;
+          } else if (lowerQuery.includes("bread") || lowerQuery.includes("bakery")) {
+            aisle = "Bakery Section";
+            distance = 6;
+          }
+          distanceText.textContent = `Item found in ${aisle}`;
+          directionText.textContent = `Approximately ${distance} steps away - Ready to navigate`;
+        }
+      });
+    </script>
+    <script id="recent-searches">
+      document.addEventListener("DOMContentLoaded", function () {
+        const recentSearchItems = document.querySelectorAll(
+          ".bg-gray-50 .space-y-3 > div",
+        );
+        const searchInput = document.getElementById("searchInput");
+        recentSearchItems.forEach((item) => {
+          item.addEventListener("click", function () {
+            const itemName = this.querySelector("span").textContent;
+            searchInput.value = itemName;
+            searchInput.dispatchEvent(new Event("input"));
+          });
+        });
+      });
+    </script>
+  </body>
 </html>

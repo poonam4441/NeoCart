@@ -91,13 +91,6 @@ NeoCart isn’t just a store — it’s a **shopping companion** built for moder
 
 ---
 
-### 📌 Demo
-
-👉 Try the homepage and journey planner by launching `index.html` locally.  
-👉 More features are modular and in progress — feel free to explore!
-
----
-
 ### 📄 License
 
 MIT License – Free to use, remix, and build upon with credit.
